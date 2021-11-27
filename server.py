@@ -43,8 +43,9 @@ def botok_modifier(tokens):
 def segment(in_str):
     try:
         t = Text(in_str, tok_params={'profile': 'GMD'})
-        tokens = t.custom_pipeline('dummy', open_pecha_tokenizer, botok_modifier, 'dummy')
-    except:
+        tokens = t.custom_pipeline('dummy', botok_tokenizer, botok_modifier, 'dummy')
+    except Exception as e:
+        print(e)
         print("botok failed to segment "+in_str)
         return in_str
     res = ''
@@ -53,7 +54,7 @@ def segment(in_str):
        if not first:
            res += " "
        first = False
-       res += multisylstr[token['start']:token['end']]
+       res += in_str[token['start']:token['end']]
     return res
 
 def add_phono(in_str, res):
