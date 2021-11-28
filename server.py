@@ -4,6 +4,7 @@ import sys
 sys.path.append('../bophono')
 import bophono
 from botok import Text, WordTokenizer
+import re
 
 api = Flask("KVP")
 
@@ -40,6 +41,12 @@ def botok_modifier(tokens):
         op.append(op_token)
     return op
 
+def postsegment(in_str):
+    # combine particle with previous syllable when there is just one
+    in_str = re.sub(r"(^| )([^ ]+)[\u0F0B\u0F0C] (ཏུ|གི|ཀྱི|གིས|ཀྱིས|ཡིས|ལྡན|བྲལ|ཅན)($|[^\u0F40-\u0FBC])", r"\1\2་\3\4", in_str)
+    # combine ma with following syllable when there is just one
+    return in_str
+
 def segment(in_str):
     try:
         t = Text(in_str, tok_params={'profile': 'GMD'})
@@ -55,7 +62,7 @@ def segment(in_str):
            res += " "
        first = False
        res += in_str[token['start']:token['end']]
-    return res
+    return postsegment(res)
 
 def add_phono(in_str, res):
     words = in_str.split()
@@ -82,6 +89,10 @@ def phon():
   add_phono(in_str, res)
   return json.dumps(res, ensure_ascii=False)
 
+def test():
+    print(postsegment("གང་ གི་ བློ་གྲོས་"))
+
 
 if __name__ == '__main__':
-    api.run() 
+    #api.run() 
+    test()
