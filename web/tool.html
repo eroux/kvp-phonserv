@@ -105,45 +105,45 @@
   <div class="tab-pane fade show active" id="original" role="tabpanel" aria-labelledby="original-tab">
   	<div class="mb-3">
   		<label for="original-text" class="form-label">Original text</label>
-  		<textarea class="form-control" id="original-text" rows="3"></textarea>
-  		<button type="submit" id="original-button" class="btn btn-primary mb-3">Segment and phoneticize</button>
+  		<textarea class="form-control" id="original-text" rows="20"></textarea>
+  		<button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize()">Segment and phoneticize</button>
 	</div>
   </div>
   <div class="tab-pane fade" id="segmented" role="tabpanel" aria-labelledby="segmented-tab">
   	<div class="mb-3">
   		<label for="segmented-text" class="form-label">Segmented text</label>
-  		<textarea class="form-control" id="segmented-text" rows="3"></textarea>
+  		<textarea class="form-control" id="segmented-text" rows="20"></textarea>
 	</div>
-	<button type="submit" id="segmented-button" class="btn btn-primary mb-3">Phoneticize using this segmentation</button>
+	<button type="submit" id="segmented-button" class="btn btn-primary mb-3" onclick="Phoneticize()">Phoneticize using this segmentation</button>
   </div>
   <div class="tab-pane fade" id="kvp" role="tabpanel" aria-labelledby="kvp-tab">
   	<div class="mb-3">
   		<label for="kvp-text" class="form-label">KVP phonetics</label>
-  		<textarea class="form-control" id="kvp-text" rows="3"></textarea>
+  		<textarea class="form-control" id="kvp-text" rows="20"></textarea>
 	</div>
   </div>
   <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
   	<div class="mb-3">
   		<label for="advanced-text" class="form-label">Advanced phonetics</label>
-  		<textarea class="form-control" id="advanced-text" rows="3"></textarea>
+  		<textarea class="form-control" id="advanced-text" rows="20"></textarea>
 	</div>
   </div>
   <div class="tab-pane fade" id="intermediate" role="tabpanel" aria-labelledby="intermediate-tab">
   	<div class="mb-3">
   		<label for="intermediate-text" class="form-label">Intermediate phonetics</label>
-  		<textarea class="form-control" id="intermediate-text" rows="3"></textarea>
+  		<textarea class="form-control" id="intermediate-text" rows="20"></textarea>
 	</div>
   </div>
   <div class="tab-pane fade" id="simple" role="tabpanel" aria-labelledby="simple-tab">
   	<div class="mb-3">
   		<label for="simple-text" class="form-label">Simple phonetics</label>
-  		<textarea class="form-control" id="simple-text" rows="3"></textarea>
+  		<textarea class="form-control" id="simple-text" rows="20"></textarea>
 	</div>
   </div>
   <div class="tab-pane fade" id="ipa" role="tabpanel" aria-labelledby="ipa-tab">
   	<div class="mb-3">
   		<label for="ipa-text" class="form-label">IPA phonetics</label>
-  		<textarea class="form-control" id="ipa-text" rows="3"></textarea>
+  		<textarea class="form-control" id="ipa-text" rows="20"></textarea>
 	</div>
   </div>
 </div>
@@ -155,5 +155,6 @@
     <!--script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script-->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="tool.js" crossorigin="anonymous"></script>
   </body>
 </html>

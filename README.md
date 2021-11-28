@@ -3,6 +3,12 @@
 Small python http API server for KVP (Khyentse Vision Project) phonetics
 
 
+## install
+
+```sh
+$ pip3 install -U flask flask-cors botok bophono
+```
+
 ## run
 
 ```sh

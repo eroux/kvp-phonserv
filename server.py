@@ -1,12 +1,14 @@
-from flask import Flask, json, request
+from flask import Flask, json, request, send_from_directory
 from botok import Text
 import sys
 sys.path.append('../bophono')
 import bophono
 from botok import Text, WordTokenizer
 import re
+from flask_cors import CORS
 
-api = Flask("KVP")
+api = Flask("KVP", static_url_path='')
+CORS(api)
 
 options_fastidious = {
   'weakAspirationChar': '3',
@@ -82,12 +84,16 @@ def segment_and_phon():
   add_phono(seg, res)
   return json.dumps(res, ensure_ascii=False)
 
-@api.route('/api', methods=['POST'])
+@api.route('/phoneticize', methods=['POST'])
 def phon():
   in_str = request.form['str']
   res = {}
   add_phono(in_str, res)
   return json.dumps(res, ensure_ascii=False)
+
+@api.route('/web/<path:path>')
+def send_static(path):
+    return send_from_directory('web', path)
 
 def test():
     print(postsegment("གང་ གི་ བློ་གྲོས་"))
