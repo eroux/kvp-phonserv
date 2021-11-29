@@ -59,11 +59,15 @@ function kvptodisplay(kvp) {
   return res;
 }
 
-async function SegmentAndPhoneticize() {
+async function SegmentAndPhoneticize(arg) {
   const orig = document.getElementById("original-text").value; 
   const data = new FormData();
   data.append('str', orig);
-  const response = await fetch(urlbase+'segment', {method: "POST", body: data});
+  let response
+  if (arg == "2")
+      response= await fetch(urlbase+'segmentbytwo', {method: "POST", body: data});
+  else
+      response= await fetch(urlbase+'segment', {method: "POST", body: data});
   const res = await response.json();
   document.getElementById("segmented-text").value = res["segmented"];
   document.getElementById("kvp-text").innerHTML = kvptodisplay(res["kvp"]);
@@ -71,7 +75,10 @@ async function SegmentAndPhoneticize() {
   document.getElementById("advanced-text").innerHTML = ipatophon(res["ipa"], "advanced");
   document.getElementById("intermediate-text").innerHTML = ipatophon(res["ipa"], "intermediate");
   document.getElementById("simple-text").innerHTML = ipatophon(res["ipa"], "simple");
-  document.getElementById("segmented-tab").click();
+  if (arg == "2")
+    document.getElementById("kvp-tab").click();
+  else 
+    document.getElementById("segmented-tab").click();
 }
 
 async function Phoneticize() {
@@ -85,4 +92,5 @@ async function Phoneticize() {
   document.getElementById("advanced-text").innerHTML = ipatophon(res["ipa"], "advanced");
   document.getElementById("intermediate-text").innerHTML = ipatophon(res["ipa"], "intermediate");
   document.getElementById("simple-text").innerHTML = ipatophon(res["ipa"], "simple");
+  document.getElementById("kvp-tab").click();
 }

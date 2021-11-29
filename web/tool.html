@@ -120,14 +120,15 @@
   <div class="tab-pane fade show active" id="original" role="tabpanel" aria-labelledby="original-tab">
   	<div class="mb-3">
   		<label for="original-text" class="form-label">Original text</label>
-  		<textarea class="form-control" id="original-text" rows="20"></textarea>
-  		<button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize()">Segment and phoneticize</button>
+  		<textarea class="form-control" id="original-text" rows="10"></textarea>
+      <button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize('2')">Segment by 2 syllables</button>
+      <button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize('words')">Segment in words (exp.)</button>
 	</div>
   </div>
   <div class="tab-pane fade" id="segmented" role="tabpanel" aria-labelledby="segmented-tab">
   	<div class="mb-3">
   		<label for="segmented-text" class="form-label">Segmented text (check and phoneticize)</label>
-  		<textarea class="form-control" id="segmented-text" rows="20"></textarea>
+  		<textarea class="form-control" id="segmented-text" rows="10"></textarea>
 	  </div>
 	<button type="submit" id="segmented-button" class="btn btn-primary mb-3" onclick="Phoneticize()">Phoneticize using this segmentation</button>
   </div>
@@ -145,7 +146,6 @@
     <div class="mb-3">
       <h3>help</h3>
       <ul>
-        <li><strong><sub>k</sub></strong> or <strong><sub>p</sub></strong> is a glottal stop <a href="https://en.wikipedia.org/wiki/Glottal_stop">[ʔ]</a> <audio controls><source src="audio/Glottal_stop.ogg" type="audio/ogg"/></audio> followed by [k] or [p] with <a href="https://en.wikipedia.org/wiki/No_audible_release">no audible release</a> (forming the consonnant in the mouth but not "speaking" it)</li>
         <li><strong><span class="gray">ʰ</span></strong> is a weak aspiration (weaker than <strong>ʰ</strong>)</li>
         <li><strong><span class="gray">o</span></strong> as in <em>N<strong>o</strong>rth</em> (but short) <a href="https://en.wikipedia.org/wiki/Open-mid_back_rounded_vowel">[ɔ]</a> <audio controls><source src="audio/PR-open-mid_back_rounded_vowel.ogg" type="audio/ogg"/></audio></li>
         <li><strong>ky</strong> and <strong>gy</strong> are pronounced with the tongue touching the palate (not the velum as it would in English, the difference is subtle) <a href="https://en.wikipedia.org/wiki/Voiceless_palatal_plosive">[c]</a> <audio controls><source src="audio/Voiceless_palatal_plosive.ogg" type="audio/ogg"/></audio> <a href="https://en.wikipedia.org/wiki/Voiced_palatal_plosive">[ɟ]</a> <audio controls><source src="audio/Voiced_palatal_plosive.ogg" type="audio/ogg"/></audio></li>
@@ -165,6 +165,7 @@
       <ul>
         <li><strong><span class="gray">a</span></strong> as <em>Kingd<strong>o</strong>m</em> <a href="https://en.wikipedia.org/wiki/Mid_central_vowel">[ə]</a> <audio controls><source src="audio/Mid-central_vowel.ogg" type="audio/ogg"/></audio></li>
         <li><strong><sub>ʔ</sub></strong> glottal stop as in <em>u<strong>h</strong> oh</em>, or as <em>bu<strong>tt</strong>er</em> in the Cockney accent <a href="https://en.wikipedia.org/wiki/Glottal_stop">[ʔ]</a> <audio controls><source src="audio/Glottal_stop.ogg" type="audio/ogg"/></audio></li>
+        <li><strong><sub>k</sub></strong> or <strong><sub>p</sub></strong> is a glottal stop <a href="https://en.wikipedia.org/wiki/Glottal_stop">[ʔ]</a> <audio controls><source src="audio/Glottal_stop.ogg" type="audio/ogg"/></audio> followed by [k] or [p] with <a href="https://en.wikipedia.org/wiki/No_audible_release">no audible release</a> (forming the consonnant in the mouth but not "speaking" it)</li>
         <li><strong>ː</strong> vowel lengthening as in <em>l<strong>ea</strong>ve</em> <a href="https://en.wikipedia.org/wiki/Length_(phonetics)">[ː]</a></li>
         <li><strong>h</strong> or <strong>ʰ</strong> strong aspiration as in <em><strong>h</strong>ow</em> <a href="https://en.wikipedia.org/wiki/Voiceless_glottal_fricative">[h]</a> / <a href="https://en.wikipedia.org/wiki/Aspirated_consonant">[ʰ]</a> <audio controls><source src="audio/Voiceless_glottal_fricative.ogg" type="audio/ogg"/></audio></li>
         <li><strong>ḍ</strong> <em>d</em> with the bottom of the tongue touching the palate <a href="https://en.wikipedia.org/wiki/Voiced_retroflex_plosive">[ɖ]</a> <audio controls><source src="audio/Voiced_retroflex_stop.ogx" type="audio/ogg"/></audio></li>

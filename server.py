@@ -67,6 +67,17 @@ def segment(in_str):
        res += in_str[token['start']:token['end']]
     return postsegment(res)
 
+def segmentbytwo(in_str):
+    lines = in_str.split("\n")
+    res = ""
+    for l in lines:
+        countsyls = len(re.findall("[\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+", l))
+        l = re.sub(r"([\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+[^\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+[\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+[^\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]*)", r"\1 ", l)
+        if countsyls % 2 == 1:
+            l = re.sub(r" ([\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+[^\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]*)$", r"\1", l)
+        res += l+"\n"
+    return res
+
 def add_phono(in_str, res):
     lines = in_str.split("\n")
     res_kvp = ""
@@ -89,6 +100,14 @@ def segment_and_phon():
   add_phono(seg, res)
   return json.dumps(res, ensure_ascii=False)
 
+@api.route('/segmentbytwo', methods=['POST'])
+def segmentbytwo_and_phon():
+  in_str = request.form['str']
+  seg = segmentbytwo(in_str)
+  res = { "segmented" : seg }
+  add_phono(seg, res)
+  return json.dumps(res, ensure_ascii=False)
+
 @api.route('/phoneticize', methods=['POST'])
 def phon():
   in_str = request.form['str']
@@ -104,6 +123,7 @@ def test():
     print(postsegment("གང་ གི་ བློ་གྲོས་"))
     print(postsegment("ཐུགས་ཀ ར་"))
     print(postsegment("རབ་གསལ་བས། །"))
+    print(segmentbytwo("ཇི་སྙེད་དོན་ཀུན་ཇི་བཞིན་གཟིགས་ཕྱིར་ཉིད་ཀྱི་ཐུགས་ཀར་གླེགས་བམ་འཛིན།།"))
 
 if __name__ == '__main__':
     #api.run() 
