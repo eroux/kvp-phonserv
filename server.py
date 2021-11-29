@@ -45,7 +45,8 @@ def botok_modifier(tokens):
 
 def postsegment(in_str):
     # combine particle with previous syllable when there is just one
-    in_str = re.sub(r"(^| )([^ ]+)[\u0F0B\u0F0C] (ཏུ|གི|ཀྱི|གིས|ཀྱིས|ཡིས|ལྡན|བྲལ|ཅན)($|[^\u0F40-\u0FBC])", r"\1\2་\3\4", in_str)
+    in_str = re.sub(r"(^| )([^ ]+)[\u0F0B\u0F0C] +(ཏུ|གི|ཀྱི|གིས|ཀྱིས|ཡིས|ལྡན|བྲལ|ཅན|བ|པ|བོ|ཝོ|མ|མོ|བའི|བར|བས|བའོ|པའི|པར|པས|པའོ|བོའི|བོར|བོས|བོའོ|པོའི|པོར|པོས|པོའོ|མའི|མར|མས|མའོ|མོའི|མོར|མོས|མོའོ)($|[ ་-༔])", r"\1\2་\3\4", in_str)
+    in_str = re.sub(r"([\u0F40-\u0FBC]) +([\u0F40-\u0FBC])", r"\1\2", in_str) # merge affixes
     # combine ma with following syllable when there is just one
     return in_str
 
@@ -101,7 +102,8 @@ def send_static(path):
 
 def test():
     print(postsegment("གང་ གི་ བློ་གྲོས་"))
-
+    print(postsegment("ཐུགས་ཀ ར་"))
+    print(postsegment("རབ་གསལ་བས། །"))
 
 if __name__ == '__main__':
     #api.run() 
