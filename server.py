@@ -67,14 +67,18 @@ def segment(in_str):
     return postsegment(res)
 
 def add_phono(in_str, res):
-    words = in_str.split()
+    lines = in_str.split("\n")
     res_kvp = ""
-    res_api = ""
-    for word in words:
-        res_kvp += PHON_KVP.get_api(word)+'  '
-        res_api += PHON_API.get_api(word)+'  '
+    res_ipa = ""
+    for l in lines:
+        words = l.split()
+        for word in words:
+            res_kvp += PHON_KVP.get_api(word)+'  '
+            res_ipa += PHON_API.get_api(word)+'  '
+        res_kvp += "\n"
+        res_ipa += "\n"
     res["kvp"] = res_kvp
-    res["api"] = res_api
+    res["ipa"] = res_ipa
 
 @api.route('/segment', methods=['POST'])
 def segment_and_phon():

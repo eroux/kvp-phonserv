@@ -17,6 +17,8 @@ $ FLASK_APP=server flask run
 
 ## test
 
+visit `'http://localhost:5000/web/tool.html` or use the API through CLI:
+
 ```sh
 $ curl 'http://localhost:5000/segment' -d 'str=གང་གི་བློ་གྲོས་'
 ```
