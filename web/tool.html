@@ -36,6 +36,11 @@
       .gray {
         color: gray;
       }
+
+      audio {
+        width: 50px;
+        height: 17px;
+      }
     </style>
 
 
@@ -123,38 +128,52 @@
   	<div class="mb-3">
   		<label for="segmented-text" class="form-label">Segmented text</label>
   		<textarea class="form-control" id="segmented-text" rows="20"></textarea>
-	</div>
+	  </div>
 	<button type="submit" id="segmented-button" class="btn btn-primary mb-3" onclick="Phoneticize()">Phoneticize using this segmentation</button>
   </div>
   <div class="tab-pane fade" id="kvp" role="tabpanel" aria-labelledby="kvp-tab">
   	<div class="mb-3">
   		<label for="kvp-text" class="form-label">KVP phonetics</label>
   		<div contenteditable="true" class="form-control" id="kvp-text" rows="20"></div>
-	</div>
+	  </div>
   </div>
   <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
   	<div class="mb-3">
   		<label for="advanced-text" class="form-label">Advanced phonetics</label>
   		<div contenteditable="true" class="form-control" id="advanced-text" rows="20"></div>
-	</div>
+	  </div>
   </div>
   <div class="tab-pane fade" id="intermediate" role="tabpanel" aria-labelledby="intermediate-tab">
   	<div class="mb-3">
   		<label for="intermediate-text" class="form-label">Intermediate phonetics</label>
   		<div contenteditable="true" class="form-control" id="intermediate-text" rows="20"></div>
-	</div>
+	  </div>
+    <div class="mb-3">
+      <h3>help</h3>
+      <ul>
+        <li><strong>a [a]</strong> as in French <em><strong>t</strong>a</em>, German <em>M<strong>a</strong>hl</em> <audio controls><source src="audio/PR-open_front_unrounded_vowel.ogg" type="audio/ogg"/></audio></li>
+        <li><strong><span class="gray">a</span> [ə]</strong> as <em>Kingd<strong>o</strong>m</em> <audio controls><source src="audio/Mid-central_vowel.ogg" type="audio/ogg"/></audio></li>
+        <li><strong><sub>ʔ</sub> [ʔ]</strong> glottal stop as in <em>u<strong>h</strong> oh</em>, or as <em>bu<strong>tt</strong>er</em> in the Cockney accent <audio controls><source src="audio/Glottal_stop.ogg" type="audio/ogg"/></audio></li>
+        <li><strong>ː [ː]</strong> vowel lengthening as in <em>l<strong>ea</strong>ve</em></li>
+        <li><strong>ʰ [ʰ]</strong> strong aspiration as in <em><strong>h</strong>ow</em> <audio controls><source src="audio/Voiceless_glottal_fricative.ogg" type="audio/ogg"/></audio></li>
+        <li><strong>ḍ [ɖ]</strong> <em>d</em> with the bottom of the tongue touching the palate (retroflex) <audio controls><source src="audio/Voiced_retroflex_stop.ogx" type="audio/ogg"/></audio></li>
+        <li><strong>ṭ [ʈ]</strong> <em>t</em> with the bottom of the tongue touching the palate (retroflex) <audio controls><source src="audio/Voiceless_retroflex_stop.ogx" type="audio/ogg"/></audio></li>
+        <li><strong>ʂ [ʂ]</strong> <em>sh</em> with the bottom of the tongue touching the palate (retroflex) <audio controls><source src="audio/Voiceless_retroflex_sibilant.ogg" type="audio/ogg"/></audio></li>
+      </ul>
+      <p>Audios from <a href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">Wikipedia</a>, under the CCBY-SA license.</p>
+    </div>
   </div>
   <div class="tab-pane fade" id="simple" role="tabpanel" aria-labelledby="simple-tab">
   	<div class="mb-3">
   		<label for="simple-text" class="form-label">Simple phonetics</label>
   		<div contenteditable="true" class="form-control" id="simple-text" rows="20"></div>
-	</div>
+	  </div>
   </div>
   <div class="tab-pane fade" id="ipa" role="tabpanel" aria-labelledby="ipa-tab">
   	<div class="mb-3">
   		<label for="ipa-text" class="form-label">IPA phonetics</label>
   		<div contenteditable="true" class="form-control" id="ipa-text" rows="20"></div>
-	</div>
+	  </div>
   </div>
 </div>
 </section>

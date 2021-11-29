@@ -24,7 +24,7 @@ function ipatophon(ipa, level) {
     res = res.replace(/ə/g, "<span class='gray'>a</span>");
     res = res.replace(/n\u031A/g, "n");
   } else {
-    res = res.replace(/[̱̄3ʰʔ\u031A]/g, "");
+    res = res.replace(/[̱̄3ʰʔ\u031Aː]/g, "");
     res = res.replace(/ɔ/g, "o");
     res = res.replace(/ə/g, "a");
     res = res.replace(/n\u031A/g, "n");
