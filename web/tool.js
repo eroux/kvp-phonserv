@@ -10,7 +10,7 @@ function ipatophon(ipa, level) {
   res = res.replace(/y/g, "ü");
   res = res.replace(/c/g, "ky");
   if (level == "advanced") {
-    res = res.replace(/ɔ([\u0304\u0331])?/g, "<i>o$1</i>");
+    res = res.replace(/ɔ([\u0304\u0331])?/g, "<span class='gray'>o$1</span>");
     res = res.replace(/ə([\u0304\u0331])?/g, "<span class='gray'>a$1</span>");
     res = res.replace(/3/g, "<span class='gray'>ʰ</span>");
     res = res.replace(/ʔ([kp])\u031A/g, "<sub>$1</sub>");
