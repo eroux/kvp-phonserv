@@ -7,7 +7,7 @@ from botok import Text, WordTokenizer
 import re
 from flask_cors import CORS
 
-api = Flask("KVP", static_url_path='')
+api = Flask("KVP", static_url_path='', static_folder='web/')
 CORS(api)
 
 options_fastidious = {
@@ -115,9 +115,9 @@ def phon():
   add_phono(in_str, res)
   return json.dumps(res, ensure_ascii=False)
 
-@api.route('/web/<path:path>')
-def send_static(path):
-    return send_from_directory('web', path)
+@api.route('/', methods=['GET'])
+def default():
+    return api.send_static_file('tool.html')
 
 def test():
     print(postsegment("གང་ གི་ བློ་གྲོས་"))
