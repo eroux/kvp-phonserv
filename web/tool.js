@@ -15,14 +15,14 @@ function ipatophon(ipa, level) {
     res = res.replace(/ʔ/g, "<sub>ʔ</sub>");
     res = res.replace(/n\u031A/g, "n");
   } else if (level == "intermediate") {
-    res = res.replace(/[̱̄3]/g, "");
+    res = res.replace(/[̱̄3˥˦˧˨˩]/g, "");
     res = res.replace(/ʔ([kp])\u031A/g, "<sub>$1</sub>");
     res = res.replace(/ʔ/g, "<sub>ʔ</sub>");
     res = res.replace(/ɔ/g, "o");
     res = res.replace(/ə/g, "<span class='gray'>a</span>");
     res = res.replace(/n\u031A/g, "n");
   } else {
-    res = res.replace(/[̱̄3ʰʔ\u031Aː]/g, "");
+    res = res.replace(/[̱̄3ʰʔ\u031Aː˥˦˧˨˩]/g, "");
     res = res.replace(/ɔ/g, "o");
     res = res.replace(/ə/g, "a");
     res = res.replace(/n\u031A/g, "n");
