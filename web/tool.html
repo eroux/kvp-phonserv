@@ -120,7 +120,7 @@
   <div class="tab-pane fade show active" id="original" role="tabpanel" aria-labelledby="original-tab">
   	<div class="mb-3">
   		<label for="original-text" class="form-label">Original text</label>
-  		<textarea class="form-control" id="original-text" rows="10"></textarea>
+  		<textarea class="form-control" id="original-text" rows="10" spellcheck="false"></textarea>
       <button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize('2')">Segment by 2 syllables</button>
       <button type="submit" id="original-button" class="btn btn-primary mb-3" onclick="SegmentAndPhoneticize('words')">Segment in words (exp.)</button>
 	</div>
@@ -128,20 +128,20 @@
   <div class="tab-pane fade" id="segmented" role="tabpanel" aria-labelledby="segmented-tab">
   	<div class="mb-3">
   		<label for="segmented-text" class="form-label">Segmented text (check and phoneticize)</label>
-  		<textarea class="form-control" id="segmented-text" rows="10"></textarea>
+  		<textarea class="form-control" id="segmented-text" rows="10" spellcheck="false"></textarea>
 	  </div>
 	<button type="submit" id="segmented-button" class="btn btn-primary mb-3" onclick="Phoneticize()">Phoneticize using this segmentation</button>
   </div>
   <div class="tab-pane fade" id="kvp" role="tabpanel" aria-labelledby="kvp-tab">
   	<div class="mb-3">
   		<label for="kvp-text" class="form-label">KVP phonetics</label>
-  		<div contenteditable="true" class="form-control" id="kvp-text" rows="20"></div>
+  		<div contenteditable="true" class="form-control" id="kvp-text" rows="20" spellcheck="false"></div>
 	  </div>
   </div>
   <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
   	<div class="mb-3">
   		<label for="advanced-text" class="form-label">Advanced phonetics</label>
-  		<div contenteditable="true" class="form-control" id="advanced-text" rows="20"></div>
+  		<div contenteditable="true" class="form-control" id="advanced-text" rows="20" spellcheck="false"></div>
 	  </div>
     <div class="mb-3">
       <h3>help</h3>
@@ -161,7 +161,7 @@
   <div class="tab-pane fade" id="intermediate" role="tabpanel" aria-labelledby="intermediate-tab">
   	<div class="mb-3">
   		<label for="intermediate-text" class="form-label">Intermediate phonetics</label>
-  		<div contenteditable="true" class="form-control" id="intermediate-text" rows="20"></div>
+  		<div contenteditable="true" class="form-control" id="intermediate-text" rows="20" spellcheck="false"></div>
 	  </div>
     <div class="mb-3">
       <h3>help</h3>
@@ -184,7 +184,7 @@
   <div class="tab-pane fade" id="simple" role="tabpanel" aria-labelledby="simple-tab">
   	<div class="mb-3">
   		<label for="simple-text" class="form-label">Simple phonetics</label>
-  		<div contenteditable="true" class="form-control" id="simple-text" rows="20"></div>
+  		<div contenteditable="true" class="form-control" id="simple-text" rows="20" spellcheck="false"></div>
 	  </div>
     <div class="mb-3">
       <h3>help</h3>
@@ -210,7 +210,7 @@
   <div class="tab-pane fade" id="ipa" role="tabpanel" aria-labelledby="ipa-tab">
   	<div class="mb-3">
   		<label for="ipa-text" class="form-label">IPA phonetics</label>
-  		<div contenteditable="true" class="form-control" id="ipa-text" rows="20"></div>
+  		<div contenteditable="true" class="form-control" id="ipa-text" rows="20" spellcheck="false"></div>
 	  </div>
     <div class="mb-3">
       <h3>help</h3>
