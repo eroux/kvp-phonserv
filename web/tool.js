@@ -64,6 +64,8 @@ async function SegmentAndPhoneticize(arg) {
   let response
   if (arg == "2")
       response= await fetch('/segmentbytwo', {method: "POST", body: data});
+  else if (arg == "1")
+      response= await fetch('/segmentbyone', {method: "POST", body: data});
   else
       response= await fetch('/segment', {method: "POST", body: data});
   const res = await response.json();
@@ -73,7 +75,7 @@ async function SegmentAndPhoneticize(arg) {
   document.getElementById("advanced-text").innerHTML = ipatophon(res["ipa"], "advanced");
   document.getElementById("intermediate-text").innerHTML = ipatophon(res["ipa"], "intermediate");
   document.getElementById("simple-text").innerHTML = ipatophon(res["ipa"], "simple");
-  if (arg == "2")
+  if (arg == "2" || arg == "1")
     document.getElementById("kvp-tab").click();
   else 
     document.getElementById("segmented-tab").click();

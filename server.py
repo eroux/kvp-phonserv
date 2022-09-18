@@ -78,6 +78,15 @@ def segmentbytwo(in_str):
         res += l+"\n"
     return res
 
+def segmentbyone(in_str):
+    lines = in_str.split("\n")
+    res = ""
+    for l in lines:
+        countsyls = len(re.findall("[\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+", l))
+        l = re.sub(r"([\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]+[^\u0F35\u0F37ཀ-\u0f7e\u0F80-\u0FBC]*)", r"\1 ", l)
+        res += l+"\n"
+    return res
+
 def add_phono(in_str, res):
     lines = in_str.split("\n")
     res_kvp = ""
@@ -96,6 +105,14 @@ def add_phono(in_str, res):
 def segment_and_phon():
   in_str = request.form['str']
   seg = segment(in_str)
+  res = { "segmented" : seg }
+  add_phono(seg, res)
+  return json.dumps(res, ensure_ascii=False)
+
+@api.route('/segmentbyone', methods=['POST'])
+def segmentbyone_and_phon():
+  in_str = request.form['str']
+  seg = segmentbyone(in_str)
   res = { "segmented" : seg }
   add_phono(seg, res)
   return json.dumps(res, ensure_ascii=False)
@@ -124,6 +141,7 @@ def test():
     print(postsegment("ཐུགས་ཀ ར་"))
     print(postsegment("རབ་གསལ་བས། །"))
     print(segmentbytwo("ཇི་སྙེད་དོན་ཀུན་ཇི་བཞིན་གཟིགས་ཕྱིར་ཉིད་ཀྱི་ཐུགས་ཀར་གླེགས་བམ་འཛིན།།"))
+    print(segmentbyone("ཇི་སྙེད་དོན་ཀུན་ཇི་བཞིན་གཟིགས་ཕྱིར་ཉིད་ཀྱི་ཐུགས་ཀར་གླེགས་བམ་འཛིན།།"))
 
 if __name__ == '__main__':
     #api.run() 
