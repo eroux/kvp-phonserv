@@ -61,10 +61,10 @@ def segment(in_str):
     res = ''
     first = True
     for token in tokens:
-       if not first:
-           res += " "
-       first = False
-       res += in_str[token['start']:token['end']]
+        if not first:
+            res += " "
+        first = False
+        res += in_str[token['start']:token['end']]
     return postsegment(res)
 
 def segmentbytwo(in_str):
@@ -134,7 +134,7 @@ def phon():
 
 @api.route('/', methods=['GET'])
 def default():
-    return api.send_static_file('tool.html')
+    return api.send_static_file('index.html')
 
 def test():
     print(postsegment("གང་ གི་ བློ་གྲོས་"))

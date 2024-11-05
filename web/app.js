@@ -1,0 +1,181 @@
+window.alpineData = function () {
+  return {
+    step: 1,
+    originalText: stripIndent(`
+      གང་གི་བློ་གྲོས་སྒྲིབ་གཉིས་སྤྲིན་བྲལ་ཉི་ལྟར་རྣམ་དག་རབ་གསལ་བས།།
+      ཇི་སྙེད་དོན་ཀུན་ཇི་བཞིན་གཟིགས་ཕྱིར་ཉིད་ཀྱི་ཐུགས་ཀར་གླེགས་བམ་འཛིན།།
+      གང་དག་སྲིད་པའི་བཙོན་རར་མ་རིག་མུན་འཐུམས་སྡུག་བསྔལ་གྱིས་གཟིར་བའི།།
+      འགྲོ་ཚོགས་ཀུན་ལ་བུ་གཅིག་ལྟར་བརྩེ་ཡན་ལག་དྲུག་བཅུའི་དབྱངས་ལྡན་གསུང༌།།
+      འབྲུག་ལྟར་ཆེར་སྒྲོགས་ཉོན་མོངས་གཉིད་སློང་ལས་ཀྱི་ལྕགས་སྒྲོག་འགྲོལ་མཛད་ཅིང༌།།
+      མ་རིག་མུན་སེལ་སྡུག་བསྔལ་མྱུ་གུ་ཇི་སྙེད་གཅོད་མཛད་རལ་གྲི་བསྣམས།།
+      གདོད་ནས་དག་ཅིང་ས་བཅུའི་མཐར་སོན་ཡོན་ཏན་ལུས་རྫོགས་རྒྱལ་སྲས་ཐུ་བོའི་སྐུ།།
+      བཅུ་ཕྲག་བཅུ་དང་བཅུ་གཉིས་རྒྱན་སྤྲས་བདག་བློའི་མུན་སེལ་འཇམ་པའི་དབྱངས་ལ་རབ་ཏུ་འདུད།།
+    `),
+    segmentedText: "",
+    segmentationType: "",
+    phoneticization: "kvp",
+    phoneticResult: null,
+    showHelp: false,
+    activeHelpType: "",
+    copied: false,
+
+    async segment() {
+      const formData = new FormData();
+      formData.append("str", this.originalText);
+
+      const endpoint = this.segmentationType === "2" 
+        ? "/segmentbytwo" 
+        : this.segmentationType === "1"
+        ? "/segmentbyone"
+        : "/segment";
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        this.segmentedText = data.segmented.replace(/^ +/gm, '');
+        
+        // Transform and store results
+        this.phoneticResult = {
+          kvp: kvptodisplay(data.kvp),
+          ipa: ipatodisplay(data.ipa),
+          advanced: ipatophon(data.ipa, "advanced"),
+          intermediate: ipatophon(data.ipa, "intermediate"),
+          simple: ipatophon(data.ipa, "simple")
+        };
+        
+        this.step = 2;
+        
+        // Auto-switch to KVP tab for 1 or 2 syllable segmentation
+        if (this.segmentationType === "1" || this.segmentationType === "2") {
+          this.phoneticization = "kvp";
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+
+    async phoneticize() {
+      const formData = new FormData();
+      formData.append("str", this.segmentedText);
+
+      try {
+        const response = await fetch("/phoneticize", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        
+        // Transform and store results
+        this.phoneticResult = {
+          kvp: kvptodisplay(data.kvp),
+          ipa: ipatodisplay(data.ipa),
+          advanced: ipatophon(data.ipa, "advanced"),
+          intermediate: ipatophon(data.ipa, "intermediate"),
+          simple: ipatophon(data.ipa, "simple")
+        };
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+
+    getPhoneticResult(type) {
+      if (!this.phoneticResult) {
+        return '';
+      }
+      return this.phoneticResult[type] || '';
+    },
+
+    async copyToClipboard(text) {
+      try {
+        // Strip HTML tags for clipboard
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = text;
+        const cleanText = tempDiv.textContent || tempDiv.innerText || '';
+        
+        await navigator.clipboard.writeText(cleanText);
+        this.copied = true;
+        setTimeout(() => (this.copied = false), 2000);
+      } catch (error) {
+        console.error("Error copying to clipboard:", error);
+      }
+    },
+
+    init() {
+      // Initialize with demo text if needed
+      if (!this.originalText) {
+        this.originalText = demo;
+      }
+
+      // Watch for changes in phoneticResult
+      this.$watch('phoneticResult', (value) => {
+        if (!value) {
+          return;
+        }
+        
+        // Update the active phonetic result when results change
+        if (this.step === 2) {
+          this.phoneticization = this.phoneticization || 'kvp';
+        }
+      });
+    }
+  };
+};
+
+const stripIndent = str => str.trim().split('\n').map(line => line.trim()).join('\n');
+
+function ipatophon(ipa, level) {
+  res = ipa.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+  res = res.replace(/y/g, "ü");
+  res = res.replace(/c/g, "ky");
+  if (level == "advanced") {
+    res = res.replace(/ɔ([\u0304\u0331])?/g, "<span class='gray'>o$1</span>");
+    res = res.replace(/ə([\u0304\u0331])?/g, "<span class='gray'>a$1</span>");
+    res = res.replace(/3/g, "<span class='gray'>ʰ</span>");
+    res = res.replace(/ʔ([kp])\u031A/g, "<sub>$1</sub>");
+    res = res.replace(/ʔ/g, "<sub>ʔ</sub>");
+    res = res.replace(/n\u031A/g, "n");
+  } else if (level == "intermediate") {
+    res = res.replace(/[̱̄3˥˦˧˨˩]/g, "");
+    res = res.replace(/ʔ([kp])\u031A/g, "<sub>$1</sub>");
+    res = res.replace(/ʔ/g, "<sub>ʔ</sub>");
+    res = res.replace(/ɔ/g, "o");
+    res = res.replace(/ə/g, "<span class='gray'>a</span>");
+    res = res.replace(/n\u031A/g, "n");
+  } else {
+    res = res.replace(/[̱̄3ʰʔ\u031Aː˥˦˧˨˩]/g, "");
+    res = res.replace(/ɔ/g, "o");
+    res = res.replace(/ə/g, "a");
+    res = res.replace(/n\u031A/g, "n");
+  }
+  res = res.replace(/ɣ/g, "g");
+  res = res.replace(/[̥̊]/g, ""); // half-voicing, not displayed
+  res = res.replace(/ɖ/g, "ḍ");
+  res = res.replace(/ʈ/g, "ṭ");
+  res = res.replace(/ɲ/g, "ny");
+  res = res.replace(/ø/g, "ö");
+  res = res.replace(/ɟ/g, "gy");
+  res = res.replace(/j/g, "y");
+  res = res.replace(/ɛ/g, "è");
+  res = res.replace(/e/g, "é");
+  res = res.replace(/ŋ(\s)/g, "ng$1");
+  res = res.replace(/ŋ/g, "ṅ");
+  res = res.replace(/tɕ/g, "ch");
+  res = res.replace(/ɕ/g, "sh");
+  res = res.replace(/dʑ/g, "j");
+  res = res.replace(/dz/g, "z");
+  return res;
+}
+
+function ipatodisplay(ipa) {
+  res = ipa.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+  res = res.replace(/3/g, "<span class='gray'>ʰ</span>");
+  return res;
+}
+
+function kvptodisplay(kvp) {
+  res = kvp.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+  return res;
+}

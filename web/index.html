@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tibetan Phonetics Tool</title>
+    <link href="css/tailwind.min.css" rel="stylesheet" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.js"
+    ></script>
+    <script src="app.js"></script>
+
+    <style>
+      @font-face {
+        font-family: "DDC Uchen";
+        src: url("fonts/DDCUchenRegular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+      .font-tibetan {
+        font-family: "DDC Uchen", "Noto Sans Tibetan", sans-serif;
+        font-size: 19px;
+        line-height: 32px;
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+      .gray {
+        color: gray;
+      }
+      audio {
+        width: 100px;
+        height: 17px;
+      }
+      .prose {
+        max-width: 65ch;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50">
+    <div x-data="alpineData()">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
+                Tibetan Phonetics Tool
+              </h1>
+              <p class="text-sm text-gray-600">
+                An experimental tool for Tibetan phonetics. It makes a first
+                pass of segmentation, then gives different phonetics output.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4">
+              <a
+                href="https://github.com/eroux/kvp-phonserv/issues/new"
+                target="_blank"
+                class="flex-1 sm:flex-none text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Give Feedback
+              </a>
+              <a
+                href="https://github.com/eroux/kvp-phonserv"
+                target="_blank"
+                class="p-2 text-gray-600 hover:text-gray-900"
+                title="View on GitHub"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <!-- Step 1: Input and Segmentation -->
+        <div x-show="step === 1" class="bg-white p-6 rounded-lg shadow-lg">
+          <div class="flex items-center gap-4 mb-4">
+            <div
+              class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold"
+            >
+              1
+            </div>
+            <h2 class="text-xl font-semibold">
+              Input text & choose segmentation
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            <textarea
+              x-model="originalText"
+              class="w-full h-48 sm:h-80 p-3 border rounded-md font-tibetan text-base"
+              placeholder="Paste your Tibetan text here..."
+            ></textarea>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <button
+                @click="segmentationType = '2'; segment()"
+                class="p-4 rounded-lg transition-colors text-left"
+                :class="segmentationType === '2' 
+                      ? 'bg-emerald-100 border-2 border-emerald-500' 
+                      : 'bg-emerald-50 border-2 border-transparent hover:border-emerald-500'"
+              >
+                <div class="font-medium text-emerald-900 text-lg">
+                  Split syllables 2 by 2
+                </div>
+                <div class="mt-2">
+                  <span
+                    class="inline-block px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded text-sm font-medium"
+                    >Recommended</span
+                  >
+                </div>
+                <div class="mt-2 text-sm text-emerald-700">
+                  Best for prayers and sadhanas
+                </div>
+              </button>
+
+              <button
+                @click="segmentationType = 'words'; segment()"
+                class="p-4 rounded-lg transition-colors text-left"
+                :class="segmentationType === 'words' 
+                      ? 'bg-blue-100 border-2 border-blue-500' 
+                      : 'bg-blue-50 border-2 border-transparent hover:border-blue-500'"
+              >
+                <div class="font-medium text-blue-900 text-lg">
+                  Split by words
+                </div>
+                <div class="mt-2">
+                  <span
+                    class="inline-block px-2 py-0.5 bg-blue-200 text-blue-800 rounded text-sm font-medium"
+                    >Experimental</span
+                  >
+                </div>
+                <div class="mt-2 text-sm text-blue-700">
+                  Best for sutras and prose
+                </div>
+              </button>
+
+              <button
+                @click="segmentationType = '1'; segment()"
+                class="p-4 rounded-lg transition-colors text-left"
+                :class="segmentationType === '1' 
+                      ? 'bg-amber-100 border-2 border-amber-500' 
+                      : 'bg-amber-50 border-2 border-transparent hover:border-amber-500'"
+              >
+                <div class="font-medium text-amber-900 text-lg">
+                  Split syllable by syllable
+                </div>
+                <div class="mt-2">
+                  <span
+                    class="inline-block px-2 py-0.5 bg-amber-200 text-amber-800 rounded text-sm font-medium"
+                    >Not recommended</span
+                  >
+                </div>
+                <div class="mt-2 text-sm text-amber-700">
+                  You probably don't need this
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Review and Phoneticize -->
+        <div x-show="step === 2" class="space-y-6">
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold"
+              >
+                2
+              </div>
+              <h2 class="text-xl font-semibold">
+                Review segmentation & choose phoneticization system
+              </h2>
+            </div>
+
+            <div class="space-y-4">
+              <div x-show="segmentationType !== '1'" class="p-3 bg-yellow-100 border-l-4 border-yellow-400">
+                Automatic segmentation is often imperfect, you can fix it
+                manually below.
+              </div>
+              <div>
+                <textarea
+                  x-model="segmentedText"
+                  class="w-full h-48 sm:h-60 p-3 border rounded-md font-tibetan text-base"
+                  placeholder="Segmented text will appear here..."
+                ></textarea>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-4 justify-between">
+                <!-- Back button -->
+                <button @click="step = 1" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 w-fit">
+                  ← Back
+                </button>
+                
+                <!-- Phonetic system buttons -->
+                <div class="flex flex-wrap gap-2">
+                  <!-- KVP - Primary option -->
+                  <button 
+                    @click="phoneticization = 'kvp'; phoneticize()" 
+                    class="p-3 sm:p-4 rounded-lg transition-colors text-left"
+                    :class="phoneticization === 'kvp' 
+                      ? 'bg-emerald-600 text-white' 
+                      : 'border border-emerald-500 text-emerald-700 hover:bg-emerald-50'"
+                  >
+                    Khyentse Vision Project
+                  </button>
+              
+                  <!-- Simple - Common alternative -->
+                  <button 
+                    @click="phoneticization = 'simple'; phoneticize()" 
+                    class="p-3 sm:p-4 rounded-lg transition-colors text-left"
+                    :class="phoneticization === 'simple' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'border border-blue-500 text-blue-700 hover:bg-blue-50'"
+                  >
+                    Simple
+                  </button>
+              
+                  <!-- Intermediate - More specialized -->
+                  <button 
+                    @click="phoneticization = 'intermediate'; phoneticize()" 
+                    class="p-3 sm:p-4 rounded-lg transition-colors text-left"
+                    :class="phoneticization === 'intermediate' 
+                      ? 'bg-violet-600 text-white' 
+                      : 'border border-violet-500 text-violet-700 hover:bg-violet-50'"
+                  >
+                    Intermediate
+                  </button>
+              
+                  <!-- Advanced - Technical -->
+                  <button 
+                    @click="phoneticization = 'advanced'; phoneticize()" 
+                    class="p-3 sm:p-4 rounded-lg transition-colors text-left"
+                    :class="phoneticization === 'advanced' 
+                      ? 'bg-amber-600 text-white' 
+                      : 'border border-amber-500 text-amber-700 hover:bg-amber-50'"
+                  >
+                    Advanced
+                  </button>
+              
+                  <!-- IPA - Most technical -->
+                  <button 
+                    @click="phoneticization = 'ipa'; phoneticize()" 
+                    class="p-3 sm:p-4 rounded-lg transition-colors text-left"
+                    :class="phoneticization === 'ipa' 
+                      ? 'bg-gray-600 text-white' 
+                      : 'border border-gray-500 text-gray-700 hover:bg-gray-50'"
+                  >
+                    IPA
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phonetic Results -->
+          <template x-if="phoneticResult">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+              <div class="flex justify-between items-center mb-3">
+                <h3 
+                  class="text-lg font-semibold"
+                  :class="
+                    phoneticization === 'kvp' ? 'text-emerald-700' :
+                    phoneticization === 'simple' ? 'text-blue-700' :
+                    phoneticization === 'intermediate' ? 'text-violet-700' :
+                    phoneticization === 'advanced' ? 'text-amber-700' :
+                    'text-gray-700'
+                  "
+                  x-text="
+                    phoneticization === 'kvp' ? 'Phonetics for Khyentse Vision Project' :
+                    phoneticization === 'simple' ? 'Simple Phonetics' :
+                    phoneticization === 'intermediate' ? 'Intermediate Phonetics' :
+                    phoneticization === 'advanced' ? 'Advanced Phonetics' :
+                    'IPA Phonetics'
+                  "
+                ></h3>
+                <div class="flex gap-2">
+                  <button
+                    @click="showHelp = true; activeHelpType = phoneticization"
+                    class="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    @click="copyToClipboard(phoneticResult[phoneticization])"
+                    class="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
+                  >
+                    <template x-if="!copied">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                      </svg>
+                    </template>
+                    <template x-if="copied">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </template>
+                  </button>
+                </div>
+              </div>
+              <div
+                contenteditable="true"
+                x-html="phoneticResult[phoneticization]"
+                readonly
+                class="w-full h-80 p-3 bg-gray-50 rounded-md font-mono text-sm"
+              ></div>
+            </div>
+          </template>
+        </div>
+        
+        <!-- Help Modal -->
+        <div
+          x-show="showHelp"
+          x-cloak
+          @click.away="showHelp = false"
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        >
+          <div
+            class="bg-white rounded-xl max-w-3xl max-h-[80vh] overflow-y-auto w-full shadow-2xl"
+          >
+            <div class="flex justify-between items-start p-6 border-b">
+              <h3
+                class="text-xl font-semibold"
+                :class="
+                  activeHelpType === 'kvp' ? 'text-emerald-700' :
+                  activeHelpType === 'simple' ? 'text-blue-700' :
+                  activeHelpType === 'intermediate' ? 'text-violet-700' :
+                  activeHelpType === 'advanced' ? 'text-amber-700' :
+                  'text-gray-700'
+                "
+                x-text="
+                activeHelpType === 'kvp' ? 'Phonetics for Khyentse Vision Project' :
+                activeHelpType === 'simple' ? 'Simple Phonetics' :
+                activeHelpType === 'intermediate' ? 'Intermediate Phonetics' :
+                activeHelpType === 'advanced' ? 'Advanced Phonetics' :
+                'IPA'
+              "></h3>
+              <button
+                @click="showHelp = false"
+                class="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="p-6">
+              <div class="prose max-w-none">
+                <!-- KVP Help -->
+                <template x-if="activeHelpType === 'kvp'">
+                  <div>
+                    <p>The phonetics system used by the <a href="https://khyentsefoundation.org/kf-projects/khyentse-vision-project/" class="text-blue-600 hover:underline">Khyentse Vision Project</a>.</p>
+                  </div>
+                </template>
+                <!-- Simple Help -->
+                <template x-if="activeHelpType === 'simple'">
+                  <div>
+                    <ul class="space-y-2">
+                      <li class="flex items-center gap-2">
+                        <strong>a</strong> as in French <em><strong>t</strong>a</em>, German <em>M<strong>a</strong>hl</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Open_front_unrounded_vowel" class="text-blue-600 hover:underline">[a]</a>
+                        <audio controls class="h-6"><source src="audio/PR-open_front_unrounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>é</strong> as in French <em>é<strong>t</strong>é</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Close-mid_front_unrounded_vowel" class="text-blue-600 hover:underline">[e]</a>
+                        <audio controls class="h-6"><source src="audio/Close-mid_front_unrounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>è</strong> as in <em>b<strong>e</strong>d</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Open-mid_front_unrounded_vowel" class="text-blue-600 hover:underline">[ɛ]</a>
+                        <audio controls class="h-6"><source src="audio/Open-mid_front_unrounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>u</strong> as in General American <em>y<strong>ou</strong></em> <a target="_blank" href="https://en.wikipedia.org/wiki/Close_back_rounded_vowel" class="text-blue-600 hover:underline">[u]</a>
+                        <audio controls class="h-6"><source src="audio/Close_back_rounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>ü</strong> as in French <em>d<strong>u</strong></em> / German <em>t<strong>ü</strong>r</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Close_front_rounded_vowel" class="text-blue-600 hover:underline">[y]</a>
+                        <audio controls class="h-6"><source src="audio/Close_front_rounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>o</strong> as in French <em>p<strong>o</strong>t</em> / German <em>w<strong>o</strong>hl</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Close-mid_back_rounded_vowel" class="text-blue-600 hover:underline">[o]</a>
+                        <audio controls class="h-6"><source src="audio/Close-mid_back_rounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>ö</strong> as in French <em>d<strong>e</strong></em> / German <em>m<strong>ö</strong>glich</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Close-mid_front_rounded_vowel" class="text-blue-600 hover:underline">[ø]</a>
+                        <audio controls class="h-6"><source src="audio/Close-mid_front_rounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mt-8 pt-4 border-t border-gray-200 space-y-2">
+                    <p class="text-sm text-gray-600">Audios from Wikipedia, under the CCBY-SA license.</p>
+                    <p class="text-sm text-gray-600">Based on the phonetics used in Lhasa according to Tournadre's Manual of Standard Tibetan.</p>
+                    <p class="text-sm text-gray-600">See <a href="https://esukhia.online/A0/A0-01-00.html" class="text-blue-600 hover:underline">the course on Phonetics on Esukhia</a> for more recordings.</p>
+                  </div>
+                </template>
+
+                <!-- Intermediate Help -->
+                <template x-if="activeHelpType === 'intermediate'">
+                  <div>
+                    <ul class="space-y-2">
+                      <li class="flex items-center gap-2">
+                        <strong><span class="gray">a</span></strong> as <em>Kingd<strong>o</strong>m</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Mid_central_vowel" class="text-blue-600 hover:underline">[ə]</a>
+                        <audio controls class="h-6"><source src="audio/Mid-central_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong><sub>ʔ</sub></strong> glottal stop as in <em>u<strong>h</strong> oh</em>, or as <em>bu<strong>tt</strong>er</em> in the Cockney accent <a target="_blank" href="https://en.wikipedia.org/wiki/Glottal_stop" class="text-blue-600 hover:underline">[ʔ]</a>
+                        <audio controls class="h-6"><source src="audio/Glottal_stop.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong><sub>k</sub></strong> or <strong><sub>p</sub></strong> is a glottal stop followed by [k] or [p] with <a target="_blank" href="https://en.wikipedia.org/wiki/No_audible_release" class="text-blue-600 hover:underline">no audible release</a> (forming the consonnant in the mouth but not "speaking" it)
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>ː</strong> vowel lengthening as in <em>l<strong>ea</strong>ve</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Length_(phonetics)" class="text-blue-600 hover:underline">[ː]</a>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>h</strong> or <strong>ʰ</strong> strong aspiration as in <em><strong>h</strong>ow</em> <a target="_blank" href="https://en.wikipedia.org/wiki/Voiceless_glottal_fricative" class="text-blue-600 hover:underline">[h]</a>
+                        <audio controls class="h-6"><source src="audio/Voiceless_glottal_fricative.mp3" type="audio/mp3"/></audio>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mt-8 pt-4 border-t border-gray-200 space-y-2">
+                    <p class="text-sm text-gray-600">Audios from Wikipedia, under the CCBY-SA license.</p>
+                    <p class="text-sm text-gray-600">Based on the phonetics used in Lhasa according to Tournadre's Manual of Standard Tibetan.</p>
+                    <p class="text-sm text-gray-600">See <a href="https://esukhia.online/A0/A0-01-00.html" class="text-blue-600 hover:underline">the course on Phonetics on Esukhia</a> for more recordings.</p>
+                  </div>
+                </template>
+
+                <!-- Advanced Help -->
+                <template x-if="activeHelpType === 'advanced'">
+                  <div>
+                    <ul class="space-y-2">
+                      <li class="flex items-center gap-2">
+                        <strong><span class="gray">ʰ</span></strong> is a weak aspiration (weaker than <strong>ʰ</strong>)
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong><span class="gray">o</span></strong> as in <em>N<strong>o</strong>rth</em> (but short) <a target="_blank" href="https://en.wikipedia.org/wiki/Open-mid_back_rounded_vowel" class="text-blue-600 hover:underline">[ɔ]</a>
+                        <audio controls class="h-6"><source src="audio/PR-open-mid_back_rounded_vowel.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>ky</strong> and <strong>gy</strong> are pronounced with the tongue touching the palate (not the velum as it would in English, the difference is subtle) <a target="_blank" href="https://en.wikipedia.org/wiki/Voiceless_palatal_plosive" class="text-blue-600 hover:underline">[c]</a>
+                        <audio controls class="h-6"><source src="audio/Voiceless_palatal_plosive.mp3" type="audio/mp3"/></audio>
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>g</strong> is not fully voiced when in the middle of words, it is realized somewhere between g and k
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>ā</strong> high tone (~sung with a high pitch)
+                      </li>
+                      <li class="flex items-center gap-2">
+                        <strong>a̱</strong> low tone (~sung with a low pitch)
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mt-8 pt-4 border-t border-gray-200 space-y-2">
+                    <p class="text-sm text-gray-600">Audios from Wikipedia, under the CCBY-SA license.</p>
+                    <p class="text-sm text-gray-600">Based on the phonetics used in Lhasa according to Tournadre's Manual of Standard Tibetan.</p>
+                    <p class="text-sm text-gray-600">See <a href="https://esukhia.online/A0/A0-01-00.html" class="text-blue-600 hover:underline">the course on Phonetics on Esukhia</a> for more recordings.</p>
+                  </div>
+                </template>
+
+                <!-- IPA Help -->
+                <template x-if="activeHelpType === 'ipa'">
+                  <div>
+                    <p>See the <a target="_blank" href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet" class="text-blue-600 hover:underline">Wikipedia article</a>, the transformation of Tibetan into IPA is based on Appendix 2 of Tournadre's Manual of Standard Tibetan, through <a href="https://github.com/Esukhia/bophono" class="text-blue-600 hover:underline">bophono</a>.</p>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
