@@ -7,12 +7,13 @@ Small python http API server for KVP (Khyentse Vision Project) phonetics
 
 ```sh
 $ pip3 install -U flask flask-cors botok bophono
+$ npm install
 ```
 
 ## run
 
 ```sh
-$ FLASK_APP=server flask run
+$ npm run dev
 ```
 
 ## test
