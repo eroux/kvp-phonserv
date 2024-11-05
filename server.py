@@ -11,18 +11,18 @@ api = Flask("KVP", static_url_path='', static_folder='web/')
 CORS(api)
 
 options_fastidious = {
-  'weakAspirationChar': '3',
-  'aspirateLowTones': True,
-  'prefixStrategy': 'always',
-  'aiAffixchar': 'ː',
-  #'hightonechar':'̄',
-  #'lowtonechar':'̱',
-  'nasalchar': '',
-  'stopSDMode': "eow",
-  'eatP': False,
-  'useUnreleasedStops': True,
-  'eatK': False,
-  'syllablesepchar': ''
+    'weakAspirationChar': '3',
+    'aspirateLowTones': True,
+    'prefixStrategy': 'always',
+    'aiAffixchar': 'ː',
+    #'hightonechar':'̄',
+    #'lowtonechar':'̱',
+    'nasalchar': '',
+    'stopSDMode': "eow",
+    'eatP': False,
+    'useUnreleasedStops': True,
+    'eatK': False,
+    'syllablesepchar': ''
 }
 
 WT = WordTokenizer()
@@ -103,34 +103,34 @@ def add_phono(in_str, res):
 
 @api.route('/segment', methods=['POST'])
 def segment_and_phon():
-  in_str = request.form['str']
-  seg = segment(in_str)
-  res = { "segmented" : seg }
-  add_phono(seg, res)
-  return json.dumps(res, ensure_ascii=False)
+    in_str = request.form['str']
+    seg = segment(in_str)
+    res = { "segmented" : seg }
+    add_phono(seg, res)
+    return json.dumps(res, ensure_ascii=False)
 
 @api.route('/segmentbyone', methods=['POST'])
 def segmentbyone_and_phon():
-  in_str = request.form['str']
-  seg = segmentbyone(in_str)
-  res = { "segmented" : seg }
-  add_phono(seg, res)
-  return json.dumps(res, ensure_ascii=False)
+    in_str = request.form['str']
+    seg = segmentbyone(in_str)
+    res = { "segmented" : seg }
+    add_phono(seg, res)
+    return json.dumps(res, ensure_ascii=False)
 
 @api.route('/segmentbytwo', methods=['POST'])
 def segmentbytwo_and_phon():
-  in_str = request.form['str']
-  seg = segmentbytwo(in_str)
-  res = { "segmented" : seg }
-  add_phono(seg, res)
-  return json.dumps(res, ensure_ascii=False)
+    in_str = request.form['str']
+    seg = segmentbytwo(in_str)
+    res = { "segmented" : seg }
+    add_phono(seg, res)
+    return json.dumps(res, ensure_ascii=False)
 
 @api.route('/phoneticize', methods=['POST'])
 def phon():
-  in_str = request.form['str']
-  res = {}
-  add_phono(in_str, res)
-  return json.dumps(res, ensure_ascii=False)
+    in_str = request.form['str']
+    res = {}
+    add_phono(in_str, res)
+    return json.dumps(res, ensure_ascii=False)
 
 @api.route('/', methods=['GET'])
 def default():
