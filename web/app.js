@@ -12,22 +12,27 @@ window.alpineData = function () {
       བཅུ་ཕྲག་བཅུ་དང་བཅུ་གཉིས་རྒྱན་སྤྲས་བདག་བློའི་མུན་སེལ་འཇམ་པའི་དབྱངས་ལ་རབ་ཏུ་འདུད།།
     `),
     segmentedText: "",
-    segmentationType: "",
+    segmentationType: "2", // Default to '2' for robust auto-segmentation
     phoneticization: "kvp",
     phoneticResult: null,
     showHelp: false,
     activeHelpType: "",
     copied: false,
+    // Progressive vertical UI state
+    showSegmentation: false,
+    showSegmented: false,
+    showPhonetic: false,
 
     async segment() {
       const formData = new FormData();
       formData.append("str", this.originalText);
 
-      const endpoint = this.segmentationType === "2" 
-        ? "/segmentbytwo" 
-        : this.segmentationType === "1"
-        ? "/segmentbyone"
-        : "/segment";
+      const endpoint =
+        this.segmentationType === "2"
+          ? "/segmentbytwo"
+          : this.segmentationType === "1"
+          ? "/segmentbyone"
+          : "/segment";
 
       try {
         const response = await fetch(endpoint, {
@@ -35,19 +40,19 @@ window.alpineData = function () {
           body: formData,
         });
         const data = await response.json();
-        this.segmentedText = data.segmented.replace(/^ +/gm, '');
-        
+        this.segmentedText = data.segmented.replace(/^ +/gm, "");
+
         // Transform and store results
         this.phoneticResult = {
           kvp: kvptodisplay(data.kvp),
           ipa: ipatodisplay(data.ipa),
           advanced: ipatophon(data.ipa, "advanced"),
           intermediate: ipatophon(data.ipa, "intermediate"),
-          simple: ipatophon(data.ipa, "simple")
+          simple: ipatophon(data.ipa, "simple"),
         };
-        
+
         this.step = 2;
-        
+        // UI state for vertical progressive flow will be handled by $watch hooks below
         // Auto-switch to KVP tab for 1 or 2 syllable segmentation
         if (this.segmentationType === "1" || this.segmentationType === "2") {
           this.phoneticization = "kvp";
@@ -55,6 +60,65 @@ window.alpineData = function () {
       } catch (error) {
         console.error("Error:", error);
       }
+    },
+
+    init() {
+      // Wait for Alpine and DOM to be fully ready before triggering segmentation/phoneticization
+      this.$nextTick(() => {
+        if (this.originalText && this.originalText.trim() !== "") {
+          this.segmentationType = this.segmentationType || "2";
+          this.segment().then(() => {
+            this.phoneticization = this.phoneticization || "kvp";
+            this.phoneticize();
+          });
+        } else {
+          this.segmentedText = "";
+          this.phoneticResult = null;
+        }
+      });
+
+      // Debounce helpers
+      let segmentTimeout = null;
+      let phoneticizeTimeout = null;
+      const debounce = (fn, timeoutVar, ms = 120) => {
+        if (timeoutVar) clearTimeout(timeoutVar);
+        return setTimeout(fn, ms);
+      };
+
+      // Live: When originalText changes, segment and phoneticize
+      this.$watch("originalText", (val) => {
+        if (val && val.trim() !== "") {
+          this.segmentationType = this.segmentationType || "2";
+          segmentTimeout = debounce(() => {
+            this.segment().then(() => {
+              this.phoneticization = this.phoneticization || "kvp";
+              this.phoneticize();
+            });
+          }, segmentTimeout);
+        } else {
+          this.segmentedText = "";
+          this.phoneticResult = null;
+        }
+      });
+
+      // Live: When segmentedText changes, phoneticize
+      this.$watch("segmentedText", (val) => {
+        if (val && val.trim() !== "") {
+          this.phoneticization = this.phoneticization || "kvp";
+          phoneticizeTimeout = debounce(() => {
+            this.phoneticize();
+          }, phoneticizeTimeout);
+        } else {
+          this.phoneticResult = null;
+        }
+      });
+
+      // Live: When phoneticization changes, re-phoneticize
+      this.$watch("phoneticization", (val) => {
+        if (this.segmentedText && this.segmentedText.trim() !== "") {
+          this.phoneticize();
+        }
+      });
     },
 
     async phoneticize() {
@@ -67,14 +131,14 @@ window.alpineData = function () {
           body: formData,
         });
         const data = await response.json();
-        
+
         // Transform and store results
         this.phoneticResult = {
           kvp: kvptodisplay(data.kvp),
           ipa: ipatodisplay(data.ipa),
           advanced: ipatophon(data.ipa, "advanced"),
           intermediate: ipatophon(data.ipa, "intermediate"),
-          simple: ipatophon(data.ipa, "simple")
+          simple: ipatophon(data.ipa, "simple"),
         };
       } catch (error) {
         console.error("Error:", error);
@@ -83,18 +147,18 @@ window.alpineData = function () {
 
     getPhoneticResult(type) {
       if (!this.phoneticResult) {
-        return '';
+        return "";
       }
-      return this.phoneticResult[type] || '';
+      return this.phoneticResult[type] || "";
     },
 
     async copyToClipboard(text) {
       try {
         // Strip HTML tags for clipboard
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = text;
-        const cleanText = tempDiv.textContent || tempDiv.innerText || '';
-        
+        const cleanText = tempDiv.textContent || tempDiv.innerText || "";
+
         await navigator.clipboard.writeText(cleanText);
         this.copied = true;
         setTimeout(() => (this.copied = false), 2000);
@@ -103,28 +167,16 @@ window.alpineData = function () {
       }
     },
 
-    init() {
-      // Initialize with demo text if needed
-      if (!this.originalText) {
-        this.originalText = demo;
-      }
 
-      // Watch for changes in phoneticResult
-      this.$watch('phoneticResult', (value) => {
-        if (!value) {
-          return;
-        }
-        
-        // Update the active phonetic result when results change
-        if (this.step === 2) {
-          this.phoneticization = this.phoneticization || 'kvp';
-        }
-      });
-    }
   };
 };
 
-const stripIndent = str => str.trim().split('\n').map(line => line.trim()).join('\n');
+const stripIndent = (str) =>
+  str
+    .trim()
+    .split("\n")
+    .map((line) => line.trim())
+    .join("\n");
 
 function ipatophon(ipa, level) {
   res = ipa.replace(/(?:\r\n|\r|\n)/g, "<br/>");
