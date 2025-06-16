@@ -25,9 +25,6 @@
         font-size: 19px;
         line-height: 32px;
       }
-      [x-cloak] {
-        display: none !important;
-      }
       .gray {
         color: gray;
       }
@@ -38,7 +35,40 @@
       .prose {
         max-width: 65ch;
       }
+      main {
+        position: relative;
+        transition: opacity 0.5s cubic-bezier(.4,0,.2,1);
+        opacity: 0;
+        z-index: 1;
+      }
+      main.revealed {
+        opacity: 1;
+      }
+      #skeleton-loader {
+        position: absolute;
+        left: 0;
+        right: 0;
+        transition: opacity 0.5s cubic-bezier(.4,0,.2,1);
+        z-index: 2;
+      }
+      #skeleton-loader.fade-out {
+        opacity: 0 !important;
+      }
     </style>
+    <script>
+      // Hide the whole app until font is loaded, then fade it in
+      document.addEventListener('DOMContentLoaded', function() {
+        document.fonts.load('1em "DDC Uchen"').then(function() {
+          var main = document.querySelector('main');
+          var skeleton = document.getElementById('skeleton-loader');
+          skeleton.classList.add('fade-out');
+          main.classList.add('revealed');
+          setTimeout(function() {
+            skeleton.style.display = 'none';
+          }, 500);
+        });
+      });
+    </script>
   </head>
 
   <body class="bg-gray-50">
@@ -85,7 +115,18 @@
         </div>
       </header>
 
-      <main class="px-2 py-4 mx-auto max-w-4xl sm:px-4 sm:py-8">
+      <!-- Skeleton Loader -->
+      <div id="skeleton-loader" class="px-2 py-4 mx-auto max-w-4xl animate-pulse">
+        <div class="flex flex-col gap-8 items-center w-full">
+          <div class="mx-auto mt-8 p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"></div>
+          <div class="mx-auto p-6 w-full max-w-2xl h-[200px] bg-gray-200 rounded-2xl"></div>
+          <div class="mx-auto p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"></div>
+          <div class="mx-auto p-6 w-full max-w-2xl h-[496px] bg-gray-200 rounded-2xl"></div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <main class="px-2 py-4 mx-auto max-w-4xl fade-in sm:px-4 sm:py-8">
         <div class="flex flex-col gap-8 items-center w-full">
           <!-- Step 1: Input Text -->
           <div
