@@ -205,7 +205,12 @@
       <!-- Main Content -->
       <main
         class="relative px-4 py-4 mx-auto fade-in sm:px-6 sm:py-8"
-        style="max-width: calc(100vw - 2rem)"
+        style="
+          max-width: calc(100vw - 2rem);
+          min-height: calc(100vh - 85px);
+          max-height: calc(100vh - 85px);
+          overflow-y: hidden;
+        "
       >
         <!-- Collapse Button (desktop only) -->
         <div x-show="isDesktop" class="flex justify-center mb-6">

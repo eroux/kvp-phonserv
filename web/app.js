@@ -131,6 +131,9 @@ window.alpineData = function () {
 
       // On init, load from localStorage is already handled in data above
       this.$nextTick(() => {
+        // Adjust textarea heights on initialization
+        this.adjustTextareaHeight();
+
         if (this.originalText && this.originalText.trim() !== "") {
           this.segmentationType = this.segmentationType || "words";
           this.segment().then(() => {
@@ -252,38 +255,30 @@ window.alpineData = function () {
       }
     },
 
-    // Adjust textarea heights to fit content and sync all textareas
+    // Adjust textarea heights to fill available viewport space
     adjustTextareaHeight() {
       this.$nextTick(() => {
-        const textareas = [
-          this.$refs.tibetanTextarea,
-          this.$refs.segmentedTextarea,
-          this.$refs.phoneticOutput,
-        ].filter(Boolean); // Filter out undefined refs
+        // Calculate available viewport height
+        const viewportHeight = window.innerHeight;
 
-        if (textareas.length === 0) return;
+        // Account for header, margins, padding, and other UI elements
+        const headerHeight = 84; // Approximate header height
+        const collapseButton = 100; // Collapse button area
+        const summaryDiv = 80; // Button area height when not collapsed
+        const margins = 120; // Various margins and gaps
 
-        // Calculate the maximum required height
-        let maxHeight = 200; // Minimum height
+        // Calculate available height for textareas
+        const availableHeight =
+          viewportHeight - headerHeight - summaryDiv - margins - collapseButton;
 
-        textareas.forEach((textarea) => {
-          if (textarea) {
-            // Reset height to auto to get the natural scroll height
-            const originalHeight = textarea.style.height;
-            textarea.style.height = "auto";
-            const scrollHeight = textarea.scrollHeight;
-            textarea.style.height = originalHeight;
+        // Set minimum and maximum constraints
+        const minHeight = 200;
+        const maxHeight = Math.max(availableHeight, minHeight);
 
-            // Add some padding for better UX
-            const requiredHeight = Math.max(scrollHeight + 20, 200);
-            maxHeight = Math.max(maxHeight, requiredHeight);
-          }
-        });
+        // Ensure we don't exceed viewport bounds
+        const finalHeight = Math.min(maxHeight, viewportHeight * 0.7);
 
-        // Cap the maximum height to prevent excessive growth
-        maxHeight = Math.min(maxHeight, window.innerHeight * 0.6);
-
-        this.textareaHeight = maxHeight;
+        this.textareaHeight = finalHeight;
       });
     },
 
