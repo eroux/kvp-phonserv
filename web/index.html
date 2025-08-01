@@ -124,21 +124,81 @@
       <!-- Skeleton Loader -->
       <div
         id="skeleton-loader"
-        class="px-2 py-4 mx-auto max-w-4xl animate-pulse"
+        class="px-4 py-8 mx-auto animate-pulse"
+        style="max-width: calc(100vw - 2rem)"
       >
-        <div class="flex flex-col gap-8 items-center w-full">
+        <!-- Collapse Button Placeholder (desktop only) -->
+        <div
+          class="flex justify-center items-center mb-6 w-full sm:hidden lg:flex"
+        >
+          <div class="w-32 h-12 bg-gray-200 rounded-full"></div>
+        </div>
+
+        <!-- 3-Panel Layout -->
+        <div class="flex flex-col gap-6 items-stretch w-full lg:flex-row">
+          <!-- Panel 1: Tibetan Input Skeleton -->
+          <div class="w-full lg:w-1/3">
+            <div
+              class="flex flex-col p-6 h-full bg-gray-100 rounded-2xl shadow-lg"
+            >
+              <!-- Header -->
+              <div
+                class="mx-auto w-48 h-6 bg-gray-200 rounded lg:mb-24 sm:mb-8"
+              ></div>
+              <!-- Textarea placeholder -->
+              <div class="flex-1 min-h-[310px] bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+
+          <!-- Collapse Button Placeholder (desktop only) -->
           <div
-            class="mx-auto mt-8 p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"
-          ></div>
-          <div
-            class="mx-auto p-6 w-full max-w-2xl h-[200px] bg-gray-200 rounded-2xl"
-          ></div>
-          <div
-            class="mx-auto p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"
-          ></div>
-          <div
-            class="mx-auto p-6 w-full max-w-2xl h-[496px] bg-gray-200 rounded-2xl"
-          ></div>
+            class="flex justify-center items-center mb-0 w-full sm:flex lg:hidden"
+          >
+            <div class="w-32 h-12 bg-gray-200 rounded-full"></div>
+          </div>
+
+          <!-- Panel 2: Segmentation Skeleton -->
+          <div class="w-full lg:w-1/3">
+            <div
+              class="flex flex-col p-6 h-full bg-gray-100 rounded-2xl shadow-lg"
+            >
+              <!-- Header -->
+              <div class="mx-auto mb-6 w-40 h-6 bg-gray-200 rounded"></div>
+              <!-- 3 Centered Buttons -->
+              <div class="flex gap-2 justify-center mb-4">
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+              </div>
+              <!-- Textarea placeholder -->
+              <div class="flex-1 min-h-[200px] bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+
+          <!-- Panel 3: Phonetics Output Skeleton -->
+          <div class="w-full lg:w-1/3">
+            <div
+              class="flex flex-col p-6 h-full bg-gray-100 rounded-2xl shadow-lg"
+            >
+              <!-- Header -->
+              <div class="mx-auto mb-6 w-36 h-6 bg-gray-200 rounded"></div>
+              <!-- 5 Centered Buttons -->
+              <div class="flex gap-2 justify-center mb-4">
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+                <div class="flex-1 h-14 bg-gray-200 rounded"></div>
+              </div>
+              <!-- Textarea placeholder -->
+              <div class="flex-1 min-h-[320px] bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Collapse Button Placeholder -->
+        <div class="flex justify-center mt-6 lg:hidden">
+          <div class="w-32 h-12 bg-gray-200 rounded-full"></div>
         </div>
       </div>
 
@@ -238,7 +298,10 @@
           </div>
 
           <!-- Mobile Collapse Button and Summary -->
-          <div x-show="isMobile" class="w-full flex flex-col items-center gap-4">
+          <div
+            x-show="isMobile"
+            class="flex flex-col gap-4 items-center w-full"
+          >
             <!-- Mobile Collapse Button -->
             <button
               @click="collapsed = !collapsed"
@@ -260,18 +323,30 @@
               </svg>
               <span x-text="collapsed ? 'Show Options' : 'Hide Options'"></span>
             </button>
-            
+
             <!-- Mobile Summary (when collapsed) -->
             <div x-show="collapsed" x-transition class="w-full">
-              <div class="p-4 mx-4 bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
-                <div class="flex flex-wrap gap-4 justify-center items-center text-sm">
+              <div
+                class="p-4 mx-4 bg-blue-50 rounded-xl border border-blue-200 shadow-sm"
+              >
+                <div
+                  class="flex flex-wrap gap-4 justify-center items-center text-sm"
+                >
                   <div class="flex gap-2 items-center">
-                    <span class="font-semibold text-blue-700">Segmentation:</span>
-                    <span class="px-2 py-1 text-blue-800 bg-blue-100 rounded-full" x-text="segmentationType === 'words' ? 'By Words' : segmentationType === 'two' ? 'Two by two' : 'One by one'"></span>
+                    <span class="font-semibold text-blue-700"
+                      >Segmentation:</span
+                    >
+                    <span
+                      class="px-2 py-1 text-blue-800 bg-blue-100 rounded-full"
+                      x-text="segmentationType === 'words' ? 'By Words' : segmentationType === 'two' ? 'Two by two' : 'One by one'"
+                    ></span>
                   </div>
                   <div class="flex gap-2 items-center">
                     <span class="font-semibold text-blue-700">Phonetics:</span>
-                    <span class="px-2 py-1 text-blue-800 uppercase bg-blue-100 rounded-full" x-text="phoneticization"></span>
+                    <span
+                      class="px-2 py-1 text-blue-800 uppercase bg-blue-100 rounded-full"
+                      x-text="phoneticization"
+                    ></span>
                   </div>
                 </div>
               </div>
