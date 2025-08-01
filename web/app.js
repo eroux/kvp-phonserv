@@ -33,7 +33,7 @@ window.alpineData = function () {
     step: 1,
     originalText: storedText === "" ? defaultText : storedText,
     segmentedText: load(STORAGE_KEYS.segmentedText, ""),
-    segmentationType: load(STORAGE_KEYS.segmentationType, "2"), // Default to '2' for robust auto-segmentation
+    segmentationType: load(STORAGE_KEYS.segmentationType, "words"),
     phoneticization: load(STORAGE_KEYS.phoneticization, "kvp"),
     phoneticResult: null,
     showHelp: false,
@@ -49,11 +49,11 @@ window.alpineData = function () {
       formData.append("str", this.originalText);
 
       const endpoint =
-        this.segmentationType === "2"
+        this.segmentationType === "words"
+          ? "/segmentbywords"
+          : this.segmentationType === "two"
           ? "/segmentbytwo"
-          : this.segmentationType === "1"
-          ? "/segmentbyone"
-          : "/segment";
+          : "/segmentbyone";
 
       try {
         const response = await fetch(endpoint, {
@@ -75,7 +75,10 @@ window.alpineData = function () {
         this.step = 2;
         // UI state for vertical progressive flow will be handled by $watch hooks below
         // Auto-switch to KVP tab for 1 or 2 syllable segmentation
-        if (this.segmentationType === "1" || this.segmentationType === "2") {
+        if (
+          this.segmentationType === "words" ||
+          this.segmentationType === "two"
+        ) {
           this.phoneticization = "kvp";
         }
       } catch (error) {
@@ -87,7 +90,7 @@ window.alpineData = function () {
       // On init, load from localStorage is already handled in data above
       this.$nextTick(() => {
         if (this.originalText && this.originalText.trim() !== "") {
-          this.segmentationType = this.segmentationType || "2";
+          this.segmentationType = this.segmentationType || "words";
           this.segment().then(() => {
             this.phoneticization = this.phoneticization || "kvp";
             this.phoneticize();
@@ -131,7 +134,7 @@ window.alpineData = function () {
       // Live: When originalText changes, segment and phoneticize
       this.$watch("originalText", (val) => {
         if (val && val.trim() !== "") {
-          this.segmentationType = this.segmentationType || "2";
+          this.segmentationType = this.segmentationType || "words";
           segmentTimeout = debounce(() => {
             this.segment();
           }, segmentTimeout);
