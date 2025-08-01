@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tibetan Phonetics Tool</title>
     <link href="css/tailwind.min.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png" />
     <script
       defer
       src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.js"
@@ -37,7 +37,7 @@
       }
       main {
         position: relative;
-        transition: opacity 0.5s cubic-bezier(.4,0,.2,1);
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         opacity: 0;
         z-index: 1;
       }
@@ -48,7 +48,7 @@
         position: absolute;
         left: 0;
         right: 0;
-        transition: opacity 0.5s cubic-bezier(.4,0,.2,1);
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 2;
       }
       #skeleton-loader.fade-out {
@@ -57,14 +57,14 @@
     </style>
     <script>
       // Hide the whole app until font is loaded, then fade it in
-      document.addEventListener('DOMContentLoaded', function() {
-        document.fonts.load('1em "DDC Uchen"').then(function() {
-          var main = document.querySelector('main');
-          var skeleton = document.getElementById('skeleton-loader');
-          skeleton.classList.add('fade-out');
-          main.classList.add('revealed');
-          setTimeout(function() {
-            skeleton.style.display = 'none';
+      document.addEventListener("DOMContentLoaded", function () {
+        document.fonts.load('1em "DDC Uchen"').then(function () {
+          var main = document.querySelector("main");
+          var skeleton = document.getElementById("skeleton-loader");
+          skeleton.classList.add("fade-out");
+          main.classList.add("revealed");
+          setTimeout(function () {
+            skeleton.style.display = "none";
           }, 500);
         });
       });
@@ -80,13 +80,19 @@
             class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center"
           >
             <div class="flex items-center">
-              <img src="logo.png" alt="Bophono Logo" class="p-2 mr-3 w-12 h-12 bg-black rounded-xl">
+              <img
+                src="logo.png"
+                alt="Bophono Logo"
+                class="p-2 mr-3 w-12 h-12 bg-black rounded-xl"
+              />
               <div>
                 <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">
                   Bophono
                 </h1>
                 <p class="text-sm text-gray-600">
-                  Tibetan to phonetics, with style<span class="font-semibold">s</span>
+                  Tibetan to phonetics, with style<span class="font-semibold"
+                    >s</span
+                  >
                 </p>
               </div>
             </div>
@@ -116,130 +122,222 @@
       </header>
 
       <!-- Skeleton Loader -->
-      <div id="skeleton-loader" class="px-2 py-4 mx-auto max-w-4xl animate-pulse">
+      <div
+        id="skeleton-loader"
+        class="px-2 py-4 mx-auto max-w-4xl animate-pulse"
+      >
         <div class="flex flex-col gap-8 items-center w-full">
-          <div class="mx-auto mt-8 p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"></div>
-          <div class="mx-auto p-6 w-full max-w-2xl h-[200px] bg-gray-200 rounded-2xl"></div>
-          <div class="mx-auto p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"></div>
-          <div class="mx-auto p-6 w-full max-w-2xl h-[496px] bg-gray-200 rounded-2xl"></div>
+          <div
+            class="mx-auto mt-8 p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"
+          ></div>
+          <div
+            class="mx-auto p-6 w-full max-w-2xl h-[200px] bg-gray-200 rounded-2xl"
+          ></div>
+          <div
+            class="mx-auto p-6 w-full max-w-2xl h-[354px] bg-gray-200 rounded-2xl"
+          ></div>
+          <div
+            class="mx-auto p-6 w-full max-w-2xl h-[496px] bg-gray-200 rounded-2xl"
+          ></div>
         </div>
       </div>
 
       <!-- Main Content -->
-      <main class="px-2 py-4 mx-auto max-w-4xl fade-in sm:px-4 sm:py-8">
-        <div class="flex flex-col gap-8 items-center w-full">
-          <!-- Step 1: Input Text -->
-          <div
-            class="p-6 mx-auto mt-4 w-full max-w-2xl bg-white rounded-2xl shadow-2xl transition-all duration-500"
+      <main
+        class="relative px-4 py-4 mx-auto fade-in sm:px-6 sm:py-8"
+        style="max-width: calc(100vw - 2rem)"
+      >
+        <!-- Collapse Button (desktop only) -->
+        <div x-show="isDesktop" class="flex justify-center mb-6">
+          <button
+            @click="collapsed = !collapsed"
+            class="flex gap-2 items-center px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-lg transition-all hover:bg-blue-700 hover:scale-105"
           >
-            <h2
-              class="mb-4 text-xl font-semibold text-center text-blue-700"
+            <svg
+              class="w-4 h-4 transition-transform duration-300 ease-in-out"
+              :class="collapsed ? '' : 'rotate-180'"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              1. Paste or Enter Tibetan Text
-            </h2>
-            <textarea
-              x-model="originalText"
-              class="p-4 w-full h-48 text-xl rounded-lg border-2 border-blue-100 shadow-inner transition-all sm:h-64 focus:border-blue-400 font-tibetan"
-              placeholder="Paste your Tibetan text here..."
-              @input="showSegmentation = !!originalText"
-            ></textarea>
-          </div>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+            <span x-text="collapsed ? 'Show Options' : 'Hide Options'"></span>
+          </button>
+        </div>
 
-          <!-- Step 2: Segmentation Options (Always visible) -->
+        <!-- Summary when collapsed (absolute positioned - desktop only) -->
+        <div
+          x-show="collapsed && isDesktop"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 transform -translate-y-2"
+          x-transition:enter-end="opacity-100 transform translate-y-0"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100 transform translate-y-0"
+          x-transition:leave-end="opacity-0 transform -translate-y-2"
+          class="absolute left-1/2 z-20 mb-6 transform -translate-x-1/2"
+          style="top: 85px; width: calc(100% - 4rem); max-width: 32rem"
+        >
           <div
-            class="p-6 mx-auto w-full max-w-2xl bg-white rounded-2xl shadow-2xl transition-all duration-500"
+            class="p-4 mx-8 max-w-2xl bg-blue-50 rounded-xl border border-blue-200 shadow-sm"
           >
-            <h2 class="mb-4 text-xl font-semibold text-center text-blue-700">
-              2. Choose Segmentation
-            </h2>
-            <div class="flex flex-col gap-4 justify-center sm:flex-row">
-              <button
-                @click="segmentationType = 'words'; segment();"
-                class="flex-1 p-4 text-lg font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
-                :class="segmentationType === 'words' ? 'bg-blue-100 border-blue-500 ring-2 ring-blue-200' : 'bg-blue-50 border-transparent hover:border-blue-300'"
+            <div
+              class="flex flex-wrap gap-8 justify-center items-center text-sm"
+            >
+              <div class="flex gap-2 items-center">
+                <span class="font-semibold text-blue-700">Segmentation:</span>
+                <span
+                  class="px-2 py-1 text-blue-800 bg-blue-100 rounded-full"
+                  x-text="segmentationType === 'words' ? 'By Words' : segmentationType === 'two' ? 'Syllables 2 by 2' : 'Syllables 1 by 1'"
+                ></span>
+              </div>
+              <div class="flex gap-2 items-center">
+                <span class="font-semibold text-blue-700">Phonetics:</span>
+                <span
+                  class="px-2 py-1 text-blue-800 uppercase bg-blue-100 rounded-full"
+                  x-text="phoneticization"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          :class="isDesktop ? 'flex relative flex-col gap-6 items-stretch w-full transition-all duration-300 ease-in-out lg:flex-row' : 'flex flex-col gap-6 items-stretch w-full'"
+          :style="'margin-top: ' + (collapsed && isDesktop ? '88px' : '0px')"
+        >
+          <!-- Panel 1: Tibetan Input -->
+          <div
+            :class="isDesktop ? 'flex-1 min-w-0 transition-all duration-300 ease-in-out lg:flex-none' : 'w-full'"
+            :style="isDesktop ? ('width: ' + (collapsed ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)') + '; flex: none;') : ''"
+          >
+            <div
+              :class="isDesktop ? 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
+            >
+              <h2
+                class="text-xl font-semibold text-center text-blue-700"
+                :class="isDesktop ? (collapsed ? 'mb-5' : 'mb-24') : 'mb-5'"
               >
-                By Words
-              </button>
-              <button
-                @click="segmentationType = 'two'; segment();"
-                class="flex-1 p-4 text-lg font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
-                :class="segmentationType === 'two' ? 'bg-emerald-100 border-emerald-500 ring-2 ring-emerald-200' : 'bg-emerald-50 border-transparent hover:border-emerald-300'"
-              >
-                Syllables 2 by 2
-              </button>
-              <button
-                @click="segmentationType = 'one'; segment();"
-                class="flex-1 p-4 text-lg font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
-                :class="segmentationType === 'one' ? 'bg-amber-100 border-amber-500 ring-2 ring-amber-200' : 'bg-amber-50 border-transparent hover:border-amber-300'"
-              >
-                Syllable by Syllable
-              </button>
+                <span x-show="!collapsed">1. </span>Paste or enter Tibetan text
+              </h2>
+              <textarea
+                x-model="originalText"
+                x-ref="tibetanTextarea"
+                class="p-4 w-full text-xl rounded-lg border-2 border-blue-100 shadow-inner transition-all resize-none focus:border-blue-400 font-tibetan"
+                :style="'height: ' + textareaHeight + 'px'"
+                placeholder="Paste your Tibetan text here..."
+                @input="showSegmentation = !!originalText; if (originalText) segment(); adjustTextareaHeight();"
+                @scroll="syncScroll($event, 'tibetan')"
+              ></textarea>
             </div>
           </div>
 
-          <!-- Step 3: Segmented Text (Appears after segmentation) -->
-          <div
-            class="p-6 mx-auto w-full max-w-2xl bg-white rounded-2xl shadow-2xl transition-all duration-500"
-          >
-            <h2 class="mb-2 text-xl font-semibold text-center text-blue-700">
-              3. Review & Edit Segmentation
-            </h2>
-            <p class="mb-4 text-center text-gray-500">
-              You can adjust the segmentation below if needed.
-            </p>
-            <textarea
-              x-model="segmentedText"
-              class="p-4 w-full h-40 text-lg rounded-lg border-2 shadow-inner transition-all sm:h-56 font-tibetan"
-              placeholder="Segmented text will appear here..."
-            ></textarea>
+          <!-- Mobile Collapse Button and Summary -->
+          <div x-show="isMobile" class="w-full flex flex-col items-center gap-4">
+            <!-- Mobile Collapse Button -->
+            <button
+              @click="collapsed = !collapsed"
+              class="flex gap-2 items-center px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-lg transition-all hover:bg-blue-700 hover:scale-105"
+            >
+              <svg
+                class="w-4 h-4 transition-transform duration-300 ease-in-out"
+                :class="collapsed ? '' : 'rotate-180'"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+              <span x-text="collapsed ? 'Show Options' : 'Hide Options'"></span>
+            </button>
+            
+            <!-- Mobile Summary (when collapsed) -->
+            <div x-show="collapsed" x-transition class="w-full">
+              <div class="p-4 mx-4 bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
+                <div class="flex flex-wrap gap-4 justify-center items-center text-sm">
+                  <div class="flex gap-2 items-center">
+                    <span class="font-semibold text-blue-700">Segmentation:</span>
+                    <span class="px-2 py-1 text-blue-800 bg-blue-100 rounded-full" x-text="segmentationType === 'words' ? 'By Words' : segmentationType === 'two' ? 'Two by two' : 'One by one'"></span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span class="font-semibold text-blue-700">Phonetics:</span>
+                    <span class="px-2 py-1 text-blue-800 uppercase bg-blue-100 rounded-full" x-text="phoneticization"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Step 4: Phoneticization Options (Appears after segmentation) -->
+          <!-- Panel 2: Segmentation (absolute positioned overlay on desktop, normal flow on mobile) -->
           <div
-            class="p-6 mx-auto w-full max-w-2xl bg-white rounded-2xl shadow-2xl transition-all duration-500"
+            :class="isDesktop ? 'absolute top-0 left-1/3 z-10 transition-all duration-300 ease-in-out' : 'w-full overflow-hidden transition-all duration-300 ease-in-out'"
+            :style="isDesktop ? ('width: calc(33.333% - 16px); margin-left: 8px;' + (!collapsed ? '' : ' opacity: 0; transform: scale(0.9);')) : ('max-height: ' + (!collapsed ? '1000px' : '0px') + '; opacity: ' + (!collapsed ? '1' : '0') + ';')"
           >
-            <h2 class="mb-4 text-xl font-semibold text-center text-blue-700">
-              4. Choose Phonetic Style
-            </h2>
-            <div class="flex flex-wrap gap-2 justify-center">
+            <div
+              :class="isDesktop ? 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
+            >
+              <h2 class="mb-5 text-xl font-semibold text-center text-blue-700">
+                2. Choose segmentation
+              </h2>
+              <div class="flex flex-col gap-4 justify-center sm:flex-row">
+                <button
+                  @click="segmentationType = 'words'; segment();"
+                  class="flex-1 px-2 py-4 font-semibold text-center rounded-xl border-2 shadow transition-all text-md hover:scale-105"
+                  :class="segmentationType === 'words' ? 'bg-blue-100 border-blue-500 ring-2 ring-blue-200' : 'bg-blue-50 border-transparent hover:border-blue-300'"
+                >
+                  By words
+                </button>
+                <button
+                  @click="segmentationType = 'two'; segment();"
+                  class="flex-1 px-2 py-4 font-semibold text-center rounded-xl border-2 shadow transition-all text-md hover:scale-105"
+                  :class="segmentationType === 'two' ? 'bg-emerald-100 border-emerald-500 ring-2 ring-emerald-200' : 'bg-emerald-50 border-transparent hover:border-emerald-300'"
+                >
+                  Two by two
+                </button>
+                <button
+                  @click="segmentationType = 'one'; segment();"
+                  class="flex-1 px-2 py-4 font-semibold text-center rounded-xl border-2 shadow transition-all text-md hover:scale-105"
+                  :class="segmentationType === 'one' ? 'bg-amber-100 border-amber-500 ring-2 ring-amber-200' : 'bg-amber-50 border-transparent hover:border-amber-300'"
+                >
+                  One by one
+                </button>
+              </div>
+              <textarea
+                x-model="segmentedText"
+                x-ref="segmentedTextarea"
+                class="p-4 mt-4 w-full text-lg rounded-lg border-2 shadow-inner transition-all resize-none font-tibetan"
+                :style="'height: ' + textareaHeight + 'px'"
+                placeholder="Segmented text will appear here..."
+                @input="if (segmentedText) phoneticize();"
+                @scroll="syncScroll($event, 'segmented')"
+              ></textarea>
+            </div>
+          </div>
+          <!-- Panel 3: Phoneticization -->
+          <div
+            :class="isDesktop ? 'flex-1 min-w-0 transition-all duration-300 ease-in-out lg:flex-none' : 'w-full transition-all duration-300 ease-in-out'"
+            :style="isDesktop ? ('width: ' + (collapsed ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)') + '; flex: none; margin-left: auto;') : ''"
+          >
+            <div
+              :class="isDesktop ? 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
+            >
+              <h2 class="mb-5 text-xl font-semibold text-center text-blue-700">
+                <span x-show="!collapsed">3. </span>Phonetics
+              </h2>
+
               <button
-                @click="phoneticization = 'kvp'; phoneticize();"
-                class="p-3 text-base font-semibold text-center rounded-xl border-2 shadow transition-all sm:p-4 hover:scale-105"
-                :class="phoneticization === 'kvp' ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-200' : 'border-emerald-500 text-emerald-700 hover:bg-emerald-50'"
-              >
-                KVP
-              </button>
-              <button
-                @click="phoneticization = 'simple'; phoneticize();"
-                class="p-3 text-base font-semibold text-center rounded-xl border-2 shadow transition-all sm:p-4 hover:scale-105"
-                :class="phoneticization === 'simple' ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-200' : 'border-blue-500 text-blue-700 hover:bg-blue-50'"
-              >
-                Simple
-              </button>
-              <button
-                @click="phoneticization = 'intermediate'; phoneticize();"
-                class="p-3 text-base font-semibold text-center rounded-xl border-2 shadow transition-all sm:p-4 hover:scale-105"
-                :class="phoneticization === 'intermediate' ? 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200' : 'border-violet-500 text-violet-700 hover:bg-violet-50'"
-              >
-                Intermediate
-              </button>
-              <button
-                @click="phoneticization = 'advanced'; phoneticize();"
-                class="p-3 text-base font-semibold text-center rounded-xl border-2 shadow transition-all sm:p-4 hover:scale-105"
-                :class="phoneticization === 'advanced' ? 'bg-amber-600 text-white border-amber-600 ring-2 ring-amber-200' : 'border-amber-500 text-amber-700 hover:bg-amber-50'"
-              >
-                Advanced
-              </button>
-              <button
-                @click="phoneticization = 'ipa'; phoneticize();"
-                class="p-3 text-base font-semibold text-center rounded-xl border-2 shadow transition-all sm:p-4 hover:scale-105"
-                :class="phoneticization === 'ipa' ? 'bg-gray-600 text-white border-gray-600 ring-2 ring-gray-200' : 'border-gray-500 text-gray-700 hover:bg-gray-50'"
-              >
-                IPA
-              </button>
-              <button
-                @click="copyToClipboard(phoneticResult[phoneticization])"
-                class="p-2 text-gray-500 rounded-full hover:text-gray-700 hover:bg-gray-100"
+                @click="copyToClipboard(phoneticResult && phoneticResult[phoneticization])"
+                class="absolute top-5 right-5 p-2 text-gray-500 rounded-full hover:text-gray-700 hover:bg-gray-100"
               >
                 <template x-if="!copied">
                   <svg
@@ -272,14 +370,67 @@
                   </svg>
                 </template>
               </button>
+
+              <!-- Phonetic Style Buttons (hidden when collapsed) -->
+              <div
+                x-show="!collapsed"
+                x-transition:enter="transition ease-out duration-300 delay-100"
+                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-y-0"
+                x-transition:leave-end="opacity-0 transform -translate-y-2"
+                class="flex flex-wrap gap-2 justify-center mb-4"
+              >
+                <button
+                  @click="phoneticization = 'kvp'; phoneticize();"
+                  class="flex-1 px-2 py-4 text-base font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
+                  :class="phoneticization === 'kvp' ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-200' : 'border-emerald-500 text-emerald-700 hover:bg-emerald-50'"
+                >
+                  KVP
+                </button>
+                <button
+                  @click="phoneticization = 'simple'; phoneticize();"
+                  class="flex-1 px-2 py-4 text-base font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
+                  :class="phoneticization === 'simple' ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-200' : 'border-blue-500 text-blue-700 hover:bg-blue-50'"
+                >
+                  Simple
+                </button>
+                <button
+                  @click="phoneticization = 'intermediate'; phoneticize();"
+                  class="flex-1 px-2 py-4 text-base font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
+                  :class="phoneticization === 'intermediate' ? 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200' : 'border-violet-500 text-violet-700 hover:bg-violet-50'"
+                >
+                  Intermediate
+                </button>
+                <button
+                  @click="phoneticization = 'advanced'; phoneticize();"
+                  class="flex-1 px-2 py-4 text-base font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
+                  :class="phoneticization === 'advanced' ? 'bg-amber-600 text-white border-amber-600 ring-2 ring-amber-200' : 'border-amber-500 text-amber-700 hover:bg-amber-50'"
+                >
+                  Advanced
+                </button>
+                <button
+                  @click="phoneticization = 'ipa'; phoneticize();"
+                  class="flex-1 px-2 py-4 text-base font-semibold text-center rounded-xl border-2 shadow transition-all hover:scale-105"
+                  :class="phoneticization === 'ipa' ? 'bg-gray-600 text-white border-gray-600 ring-2 ring-gray-200' : 'border-gray-500 text-gray-700 hover:bg-gray-50'"
+                >
+                  IPA
+                </button>
+              </div>
+
+              <!-- Phonetic Output -->
               <div
                 contenteditable="true"
-                x-html="(phoneticResult && phoneticResult[phoneticization]) ? phoneticResult[phoneticization] : '<span class=\'text-gray-300\'>Phonetic output will appear here</span>'"
+                x-html="(phoneticResult && phoneticResult[phoneticization]) ? phoneticResult[phoneticization] : '<span class=\'text-gray-300\'>Phonetics will appear here</span>'"
                 readonly
-                class="p-3 mt-4 w-full font-mono text-lg bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all min-h-80"
+                x-ref="phoneticOutput"
+                class="overflow-auto p-3 w-full font-mono whitespace-pre-line break-words bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all resize-none"
+                :style="'height: ' + textareaHeight + 'px; font-size: 1em;'"
+                @scroll="syncScroll($event, 'phonetic')"
               ></div>
             </div>
-          </template>
+          </div>
         </div>
       </main>
     </div>

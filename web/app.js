@@ -30,6 +30,7 @@ window.alpineData = function () {
   const storedText = load(STORAGE_KEYS.originalText, defaultText);
 
   return {
+    collapsed: load("kvp_collapsed", "false") === "true",
     step: 1,
     originalText: storedText === "" ? defaultText : storedText,
     segmentedText: load(STORAGE_KEYS.segmentedText, ""),
@@ -43,6 +44,33 @@ window.alpineData = function () {
     showSegmentation: false,
     showSegmented: false,
     showPhonetic: false,
+    // Textarea synchronization
+    textareaHeight: 320, // Default height in pixels
+    scrollSyncEnabled: true,
+    // Responsive state
+    windowWidth: window.innerWidth,
+
+    // Computed properties for better reactivity
+    get isDesktop() {
+      return this.windowWidth >= 1024;
+    },
+
+    get isMobile() {
+      return this.windowWidth < 1024;
+    },
+
+    // Watchers for collapse state
+    $watch: {
+      collapsed(value) {
+        try {
+          localStorage.setItem("kvp_collapsed", value);
+        } catch (e) {}
+        // Adjust textarea height when collapse state changes
+        this.$nextTick(() => {
+          this.adjustTextareaHeight();
+        });
+      },
+    },
 
     async segment() {
       const formData = new FormData();
@@ -87,6 +115,20 @@ window.alpineData = function () {
     },
 
     init() {
+      // Set up resize listener for responsive behavior with debouncing
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.windowWidth = window.innerWidth;
+          // Force reactivity update
+          this.$nextTick(() => {
+            // Trigger any necessary updates after resize
+            this.adjustTextareaHeight();
+          });
+        }, 100);
+      });
+
       // On init, load from localStorage is already handled in data above
       this.$nextTick(() => {
         if (this.originalText && this.originalText.trim() !== "") {
@@ -208,6 +250,82 @@ window.alpineData = function () {
       } catch (error) {
         console.error("Error copying to clipboard:", error);
       }
+    },
+
+    // Adjust textarea heights to fit content and sync all textareas
+    adjustTextareaHeight() {
+      this.$nextTick(() => {
+        const textareas = [
+          this.$refs.tibetanTextarea,
+          this.$refs.segmentedTextarea,
+          this.$refs.phoneticOutput,
+        ].filter(Boolean); // Filter out undefined refs
+
+        if (textareas.length === 0) return;
+
+        // Calculate the maximum required height
+        let maxHeight = 200; // Minimum height
+
+        textareas.forEach((textarea) => {
+          if (textarea) {
+            // Reset height to auto to get the natural scroll height
+            const originalHeight = textarea.style.height;
+            textarea.style.height = "auto";
+            const scrollHeight = textarea.scrollHeight;
+            textarea.style.height = originalHeight;
+
+            // Add some padding for better UX
+            const requiredHeight = Math.max(scrollHeight + 20, 200);
+            maxHeight = Math.max(maxHeight, requiredHeight);
+          }
+        });
+
+        // Cap the maximum height to prevent excessive growth
+        maxHeight = Math.min(maxHeight, window.innerHeight * 0.6);
+
+        this.textareaHeight = maxHeight;
+      });
+    },
+
+    // Synchronize scrolling between textareas
+    syncScroll(event, source) {
+      if (!this.scrollSyncEnabled) return;
+
+      const sourceElement = event.target;
+      const scrollTop = sourceElement.scrollTop;
+      const scrollPercentage =
+        sourceElement.scrollHeight > sourceElement.clientHeight
+          ? scrollTop /
+            (sourceElement.scrollHeight - sourceElement.clientHeight)
+          : 0;
+
+      // Temporarily disable sync to prevent infinite loops
+      this.scrollSyncEnabled = false;
+
+      // Sync with other textareas
+      const targets = [];
+      if (source !== "tibetan" && this.$refs.tibetanTextarea) {
+        targets.push(this.$refs.tibetanTextarea);
+      }
+      if (source !== "segmented" && this.$refs.segmentedTextarea) {
+        targets.push(this.$refs.segmentedTextarea);
+      }
+      if (source !== "phonetic" && this.$refs.phoneticOutput) {
+        targets.push(this.$refs.phoneticOutput);
+      }
+
+      targets.forEach((target) => {
+        if (target && target.scrollHeight > target.clientHeight) {
+          const targetScrollTop =
+            scrollPercentage * (target.scrollHeight - target.clientHeight);
+          target.scrollTop = targetScrollTop;
+        }
+      });
+
+      // Re-enable sync after a short delay
+      setTimeout(() => {
+        this.scrollSyncEnabled = true;
+      }, 50);
     },
   };
 };
