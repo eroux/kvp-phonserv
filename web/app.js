@@ -1,7 +1,23 @@
 window.alpineData = function () {
-  return {
-    step: 1,
-    originalText: stripIndent(`
+  // Keys for localStorage
+  const STORAGE_KEYS = {
+    originalText: "kvp_originalText",
+    segmentedText: "kvp_segmentedText",
+    segmentationType: "kvp_segmentationType",
+    phoneticization: "kvp_phoneticization",
+  };
+
+  // Helper to load from storage, fallback to default
+  function load(key, fallback) {
+    try {
+      const val = localStorage.getItem(key);
+      return val !== null ? val : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  const defaultText = stripIndent(`
       གང་གི་བློ་གྲོས་སྒྲིབ་གཉིས་སྤྲིན་བྲལ་ཉི་ལྟར་རྣམ་དག་རབ་གསལ་བས།།
       ཇི་སྙེད་དོན་ཀུན་ཇི་བཞིན་གཟིགས་ཕྱིར་ཉིད་ཀྱི་ཐུགས་ཀར་གླེགས་བམ་འཛིན།།
       གང་དག་སྲིད་པའི་བཙོན་རར་མ་རིག་མུན་འཐུམས་སྡུག་བསྔལ་གྱིས་གཟིར་བའི།།
@@ -10,10 +26,15 @@ window.alpineData = function () {
       མ་རིག་མུན་སེལ་སྡུག་བསྔལ་མྱུ་གུ་ཇི་སྙེད་གཅོད་མཛད་རལ་གྲི་བསྣམས།།
       གདོད་ནས་དག་ཅིང་ས་བཅུའི་མཐར་སོན་ཡོན་ཏན་ལུས་རྫོགས་རྒྱལ་སྲས་ཐུ་བོའི་སྐུ།།
       བཅུ་ཕྲག་བཅུ་དང་བཅུ་གཉིས་རྒྱན་སྤྲས་བདག་བློའི་མུན་སེལ་འཇམ་པའི་དབྱངས་ལ་རབ་ཏུ་འདུད།།
-    `),
-    segmentedText: "",
-    segmentationType: "2", // Default to '2' for robust auto-segmentation
-    phoneticization: "kvp",
+    `);
+  const storedText = load(STORAGE_KEYS.originalText, defaultText);
+
+  return {
+    step: 1,
+    originalText: storedText === "" ? defaultText : storedText,
+    segmentedText: load(STORAGE_KEYS.segmentedText, ""),
+    segmentationType: load(STORAGE_KEYS.segmentationType, "2"), // Default to '2' for robust auto-segmentation
+    phoneticization: load(STORAGE_KEYS.phoneticization, "kvp"),
     phoneticResult: null,
     showHelp: false,
     activeHelpType: "",
@@ -63,7 +84,7 @@ window.alpineData = function () {
     },
 
     init() {
-      // Wait for Alpine and DOM to be fully ready before triggering segmentation/phoneticization
+      // On init, load from localStorage is already handled in data above
       this.$nextTick(() => {
         if (this.originalText && this.originalText.trim() !== "") {
           this.segmentationType = this.segmentationType || "2";
@@ -75,6 +96,28 @@ window.alpineData = function () {
           this.segmentedText = "";
           this.phoneticResult = null;
         }
+      });
+
+      // Watch and persist fields to localStorage
+      this.$watch("originalText", (val) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.originalText, val);
+        } catch (e) {}
+      });
+      this.$watch("segmentedText", (val) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.segmentedText, val);
+        } catch (e) {}
+      });
+      this.$watch("segmentationType", (val) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.segmentationType, val);
+        } catch (e) {}
+      });
+      this.$watch("phoneticization", (val) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.phoneticization, val);
+        } catch (e) {}
       });
 
       // Debounce helpers
@@ -90,10 +133,7 @@ window.alpineData = function () {
         if (val && val.trim() !== "") {
           this.segmentationType = this.segmentationType || "2";
           segmentTimeout = debounce(() => {
-            this.segment().then(() => {
-              this.phoneticization = this.phoneticization || "kvp";
-              this.phoneticize();
-            });
+            this.segment();
           }, segmentTimeout);
         } else {
           this.segmentedText = "";
@@ -166,8 +206,6 @@ window.alpineData = function () {
         console.error("Error copying to clipboard:", error);
       }
     },
-
-
   };
 };
 
