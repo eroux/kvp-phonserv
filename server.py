@@ -1,9 +1,8 @@
-from flask import Flask, json, request, send_from_directory
-from botok import Text
+from flask import Flask, json, request
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bophono')))
-from phonetics import segmentbywords, segmentbytwo, segmentbyone, postsegment, add_phono
+from phonetics import segmentbywords, segmentbytwo, segmentbyone, add_phono
 from flask_cors import CORS
 
 api = Flask("KVP", static_url_path='', static_folder='web/')
