@@ -129,11 +129,25 @@ window.alpineData = function () {
       window.addEventListener("resize", () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
+          const previousWidth = this.windowWidth;
           this.windowWidth = window.innerWidth;
+          
           // Force reactivity update
           this.$nextTick(() => {
-            // Trigger any necessary updates after resize
-            this.adjustTextareaHeight();
+            if (window.innerWidth >= 1024) {
+              // Desktop: adjust textarea height based on viewport
+              this.adjustTextareaHeight();
+            } else if (previousWidth >= 1024 && window.innerWidth < 1024) {
+              // Transitioning from desktop to mobile: auto-resize textareas to fit content
+              setTimeout(() => {
+                if (this.$refs.tibetanTextarea && this.originalText) {
+                  this.autoResizeTextarea(this.$refs.tibetanTextarea);
+                }
+                if (this.$refs.segmentedTextarea && this.segmentedText) {
+                  this.autoResizeTextarea(this.$refs.segmentedTextarea);
+                }
+              }, 50);
+            }
           });
         }, 100);
       });
@@ -143,11 +157,32 @@ window.alpineData = function () {
         // Adjust textarea heights on initialization
         this.adjustTextareaHeight();
 
+        // Auto-resize textareas on mobile if they have content
+        if (window.innerWidth < 1024) {
+          // Use setTimeout to ensure DOM is fully rendered
+          setTimeout(() => {
+            if (this.$refs.tibetanTextarea && this.originalText) {
+              this.autoResizeTextarea(this.$refs.tibetanTextarea);
+            }
+            if (this.$refs.segmentedTextarea && this.segmentedText) {
+              this.autoResizeTextarea(this.$refs.segmentedTextarea);
+            }
+          }, 50);
+        }
+
         if (this.originalText && this.originalText.trim() !== "") {
           this.segmentationType = this.segmentationType || "words";
           this.segment().then(() => {
             this.phoneticization = this.phoneticization || "kvp";
             this.phoneticize();
+            // Auto-resize after content is loaded on mobile
+            if (window.innerWidth < 1024) {
+              setTimeout(() => {
+                if (this.$refs.segmentedTextarea) {
+                  this.autoResizeTextarea(this.$refs.segmentedTextarea);
+                }
+              }, 50);
+            }
           });
         } else {
           this.segmentedText = "";
@@ -221,6 +256,27 @@ window.alpineData = function () {
           this.phoneticize();
         }
       });
+
+      // Auto-resize textareas on mobile when content changes
+      this.$watch("originalText", () => {
+        if (window.innerWidth < 1024) {
+          this.$nextTick(() => {
+            if (this.$refs.tibetanTextarea) {
+              this.autoResizeTextarea(this.$refs.tibetanTextarea);
+            }
+          });
+        }
+      });
+
+      this.$watch("segmentedText", () => {
+        if (window.innerWidth < 1024) {
+          this.$nextTick(() => {
+            if (this.$refs.segmentedTextarea) {
+              this.autoResizeTextarea(this.$refs.segmentedTextarea);
+            }
+          });
+        }
+      });
     },
 
     async phoneticize() {
@@ -282,10 +338,19 @@ window.alpineData = function () {
       }
     },
 
-    // Adjust textarea heights to fill available viewport space
+    // Adjust textarea heights based on device type
     adjustTextareaHeight() {
       this.$nextTick(() => {
-        // Calculate available viewport height
+        const isMobile = window.innerWidth < 1024;
+
+        if (isMobile) {
+          // On mobile, set height to 'auto' to allow content-based sizing
+          // This will be handled by CSS with min-height
+          this.textareaHeight = 'auto';
+          return;
+        }
+
+        // Desktop behavior: Calculate available viewport height
         const viewportHeight = window.innerHeight;
 
         // Account for header, margins, padding, and other UI elements
@@ -307,6 +372,16 @@ window.alpineData = function () {
 
         this.textareaHeight = finalHeight;
       });
+    },
+
+    // Auto-resize textareas to fit content on mobile
+    autoResizeTextarea(element) {
+      if (window.innerWidth < 1024 && element) {
+        // Reset height to auto to get the correct scrollHeight
+        element.style.height = 'auto';
+        // Set height to scrollHeight to fit content
+        element.style.height = Math.max(element.scrollHeight, 100) + 'px';
+      }
     },
 
     // Synchronize scrolling between textareas

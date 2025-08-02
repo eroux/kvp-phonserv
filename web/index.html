@@ -212,12 +212,7 @@
       <!-- Main Content -->
       <main
         class="relative px-4 py-4 mx-auto fade-in sm:px-6 sm:py-8"
-        style="
-          max-width: calc(100vw - 2rem);
-          min-height: calc(100vh - 85px);
-          max-height: calc(100vh - 85px);
-          overflow-y: hidden;
-        "
+        :style="isDesktop ? 'max-width: calc(100vw - 2rem); min-height: calc(100vh - 85px); max-height: calc(100vh - 85px); overflow-y: hidden;' : 'max-width: calc(100vw - 2rem); min-height: calc(100vh - 85px); overflow-y: auto;'"
       >
         <!-- Collapse Button (desktop only) -->
         <div x-show="isDesktop" class="flex justify-center mb-6">
@@ -337,10 +332,10 @@
               <textarea
                 x-model="originalText"
                 x-ref="tibetanTextarea"
-                class="p-4 w-full text-xl rounded-lg border-2 border-blue-100 shadow-inner transition-all resize-none focus:border-blue-400 font-tibetan"
-                :style="'height: ' + textareaHeight + 'px'"
+                :class="isMobile ? 'p-4 w-full text-xl rounded-lg border-2 border-blue-100 shadow-inner transition-all resize-none focus:border-blue-400 font-tibetan overflow-hidden' : 'p-4 w-full text-xl rounded-lg border-2 border-blue-100 shadow-inner transition-all resize-none focus:border-blue-400 font-tibetan overflow-y-auto'"
+                :style="isMobile ? (textareaHeight === 'auto' ? 'height: auto; min-height: 100px;' : 'height: ' + textareaHeight + 'px') : 'height: ' + textareaHeight + 'px'"
                 placeholder="Paste your Tibetan text here..."
-                @input="showSegmentation = !!originalText; if (originalText) segment(); adjustTextareaHeight();"
+                @input="showSegmentation = !!originalText; if (originalText) segment(); if (isMobile) autoResizeTextarea($refs.tibetanTextarea); else adjustTextareaHeight();"
                 @scroll="syncScroll($event, 'tibetan')"
               ></textarea>
             </div>
@@ -476,10 +471,10 @@
               <textarea
                 x-model="segmentedText"
                 x-ref="segmentedTextarea"
-                class="p-4 mt-4 w-full text-lg rounded-lg border-2 shadow-inner transition-all resize-none font-tibetan"
-                :style="'height: ' + textareaHeight + 'px'"
+                :class="isMobile ? 'p-4 mt-4 w-full text-lg rounded-lg border-2 shadow-inner transition-all resize-none font-tibetan overflow-hidden' : 'p-4 mt-4 w-full text-lg rounded-lg border-2 shadow-inner transition-all resize-none font-tibetan overflow-y-auto'"
+                :style="isMobile ? (textareaHeight === 'auto' ? 'height: auto; min-height: 100px;' : 'height: ' + textareaHeight + 'px') : 'height: ' + textareaHeight + 'px'"
                 placeholder="Segmented text will appear here..."
-                @input="if (segmentedText) phoneticize();"
+                @input="if (segmentedText) phoneticize(); if (isMobile) autoResizeTextarea($refs.segmentedTextarea);"
                 @scroll="syncScroll($event, 'segmented')"
               ></textarea>
             </div>
@@ -587,8 +582,8 @@
                 readonly
                 x-ref="phoneticOutput"
                 id="phonetics"
-                class="overflow-auto p-3 w-full whitespace-pre-line break-words bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all resize-none"
-                :style="'height: ' + textareaHeight + 'px;'"
+                :class="isMobile ? 'overflow-hidden p-3 w-full whitespace-pre-line break-words bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all resize-none' : 'overflow-auto p-3 w-full whitespace-pre-line break-words bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all resize-none overflow-y-auto'"
+                :style="isMobile ? (textareaHeight === 'auto' ? 'height: auto; min-height: 100px;' : 'height: ' + textareaHeight + 'px;') : 'height: ' + textareaHeight + 'px;'"
                 @scroll="syncScroll($event, 'phonetics')"
               ></div>
             </div>
