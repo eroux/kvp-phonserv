@@ -34,7 +34,7 @@ def test_custom_exceptions():
         ("འདུག་ཞོག", "duk zhok"),
         ("འཇུག་ཞོགས", "juk zhok"),
         ("ཕེབས་ཤོགས", "peb shok"),
-        ("ཕྱག་འཚལ་བ་ནི་ཉི་ཤུ་རྩ་གཅིག", "chagtsal ba ni nyishu tsa chik"),
+        ("ཕྱག་འཚལ་བ་ནི་ཉི་ཤུ་རྩ་གཅིག", "chagtsalwa ni nyishu tsa chik"),
         ("བཀྲ་ཤིས་བདེ་ལེགས་ཕུན་སུམ་ཚོགས་པར་ཤོག", "tashi delek pünsum tsogpar shok"),
         ("གསོལ་བ་འདེབས་སོ་བཞེད་དོན་ལྷུན་གྲུབ་ཤོག", "sölwa deb so zhedön lhündrub shok"),
         ("འགེགས་རྣམས་མེད་ཅིང་སོ་སོར་འཇོམས་འགྱུར་ཅིག", "gek nammé ching sosor jom gyur chik"),

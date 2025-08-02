@@ -8,7 +8,7 @@ from flask_cors import CORS
 api = Flask("KVP", static_url_path='', static_folder='web/')
 CORS(api)
 
-@api.route('/segment', methods=['POST'])
+@api.route('/segmentbywords', methods=['POST'])
 def segment_and_phon():
     in_str = request.form['str']
     seg = segmentbywords(in_str)
