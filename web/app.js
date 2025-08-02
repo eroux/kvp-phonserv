@@ -235,9 +235,12 @@ window.alpineData = function () {
 
     async copyToClipboard(text) {
       try {
-        // Strip HTML tags for clipboard
+        // Convert <br/> tags to newlines before stripping HTML
+        const textWithNewlines = text.replace(/<br\s*\/?>/gi, "\n");
+
+        // Strip remaining HTML tags for clipboard
         const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = text;
+        tempDiv.innerHTML = textWithNewlines;
         const cleanText = tempDiv.textContent || tempDiv.innerText || "";
 
         await navigator.clipboard.writeText(cleanText);
