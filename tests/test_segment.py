@@ -2,7 +2,7 @@ import unittest
 from .test_helpers import assert_equal_phonetics
 
 class TestSegmentation(unittest.TestCase):
-    def test_segment(self):
+    def test_segmentbywords(self):
         assert_equal_phonetics(
           "གང་ གི་ བློ་གྲོས་",
           "gang gi lodrö",
