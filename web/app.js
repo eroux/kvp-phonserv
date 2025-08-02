@@ -290,33 +290,39 @@ window.alpineData = function () {
             (sourceElement.scrollHeight - sourceElement.clientHeight)
           : 0;
 
-      // Temporarily disable sync to prevent infinite loops
-      this.scrollSyncEnabled = false;
-
-      // Sync with other textareas
-      const targets = [];
-      if (source !== "tibetan" && this.$refs.tibetanTextarea) {
-        targets.push(this.$refs.tibetanTextarea);
-      }
-      if (source !== "segmented" && this.$refs.segmentedTextarea) {
-        targets.push(this.$refs.segmentedTextarea);
-      }
-      if (source !== "phonetic" && this.$refs.phoneticOutput) {
-        targets.push(this.$refs.phoneticOutput);
+      // Use requestAnimationFrame for smoother sync and prevent infinite loops
+      if (this.syncScrollFrame) {
+        cancelAnimationFrame(this.syncScrollFrame);
       }
 
-      targets.forEach((target) => {
-        if (target && target.scrollHeight > target.clientHeight) {
-          const targetScrollTop =
-            scrollPercentage * (target.scrollHeight - target.clientHeight);
-          target.scrollTop = targetScrollTop;
+      this.syncScrollFrame = requestAnimationFrame(() => {
+        // Temporarily disable sync to prevent infinite loops
+        this.scrollSyncEnabled = false;
+
+        // Sync with other textareas
+        const targets = [];
+        if (source !== "tibetan" && this.$refs.tibetanTextarea) {
+          targets.push(this.$refs.tibetanTextarea);
         }
-      });
+        if (source !== "segmented" && this.$refs.segmentedTextarea) {
+          targets.push(this.$refs.segmentedTextarea);
+        }
+        if (source !== "phonetic" && this.$refs.phoneticOutput) {
+          targets.push(this.$refs.phoneticOutput);
+        }
 
-      // Re-enable sync after a short delay
-      setTimeout(() => {
+        targets.forEach((target) => {
+          if (target && target.scrollHeight > target.clientHeight) {
+            const targetScrollTop =
+              scrollPercentage * (target.scrollHeight - target.clientHeight);
+            target.scrollTop = targetScrollTop;
+          }
+        });
+
+        // Re-enable sync immediately after the frame
         this.scrollSyncEnabled = true;
-      }, 50);
+        this.syncScrollFrame = null;
+      });
     },
   };
 };
