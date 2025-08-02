@@ -289,14 +289,51 @@
             :style="isDesktop ? ('width: ' + (collapsed ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)') + '; flex: none;') : ''"
           >
             <div
-              :class="isDesktop ? 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
+              :class="isDesktop ? 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
             >
               <h2
                 class="text-xl font-semibold text-center text-blue-700"
                 :class="isDesktop ? (collapsed ? 'mb-5' : 'mb-24') : 'mb-5'"
               >
-                <span x-show="!collapsed">1. </span>Paste or enter Tibetan text
+                <span x-show="!collapsed">1. </span>Tibetan
               </h2>
+
+              <button
+                @click="copyToClipboard(originalText, 'original')"
+                class="absolute top-5 right-5 p-2 text-gray-500 rounded-full hover:text-gray-700 hover:bg-gray-100"
+                x-show="originalText"
+              >
+                <template x-if="!copiedOriginal">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </template>
+                <template x-if="copiedOriginal">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    ></path>
+                  </svg>
+                </template>
+              </button>
               <textarea
                 x-model="originalText"
                 x-ref="tibetanTextarea"
@@ -371,11 +408,48 @@
             :style="isDesktop ? ('width: calc(33.333% - 16px); margin-left: 8px;' + (collapsed ? ' opacity: 0; transform: scale(0.9); pointer-events: none;' : '')) : ('max-height: ' + (!collapsed ? '1000px' : '0px') + '; opacity: ' + (!collapsed ? '1' : '0') + ';')"
           >
             <div
-              :class="isDesktop ? 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
+              :class="isDesktop ? 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-2xl' : 'flex relative flex-col p-6 h-full bg-white rounded-2xl shadow-lg'"
             >
               <h2 class="mb-5 text-xl font-semibold text-center text-blue-700">
                 2. Segmentation
               </h2>
+
+              <button
+                @click="copyToClipboard(segmentedText, 'segmented')"
+                class="absolute top-5 right-5 p-2 text-gray-500 rounded-full hover:text-gray-700 hover:bg-gray-100"
+                x-show="segmentedText"
+              >
+                <template x-if="!copiedSegmented">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </template>
+                <template x-if="copiedSegmented">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    ></path>
+                  </svg>
+                </template>
+              </button>
               <div class="flex flex-col gap-4 justify-center sm:flex-row">
                 <button
                   @click="segmentationType = 'words'; segment();"
@@ -423,10 +497,10 @@
               </h2>
 
               <button
-                @click="copyToClipboard(phoneticResult && phoneticResult[phoneticization])"
+                @click="copyToClipboard(phoneticResult && phoneticResult[phoneticization], 'phonetics')"
                 class="absolute top-5 right-5 p-2 text-gray-500 rounded-full hover:text-gray-700 hover:bg-gray-100"
               >
-                <template x-if="!copied">
+                <template x-if="!copiedPhonetics">
                   <svg
                     class="w-5 h-5"
                     fill="none"
@@ -441,7 +515,7 @@
                     ></path>
                   </svg>
                 </template>
-                <template x-if="copied">
+                <template x-if="copiedPhonetics">
                   <svg
                     class="w-5 h-5"
                     fill="none"
@@ -515,7 +589,7 @@
                 id="phonetics"
                 class="overflow-auto p-3 w-full whitespace-pre-line break-words bg-gray-50 rounded-lg border border-gray-200 shadow-inner transition-all resize-none"
                 :style="'height: ' + textareaHeight + 'px;'"
-                @scroll="syncScroll($event, 'phonetic')"
+                @scroll="syncScroll($event, 'phonetics')"
               ></div>
             </div>
           </div>

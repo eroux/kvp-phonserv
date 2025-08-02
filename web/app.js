@@ -40,18 +40,16 @@ window.alpineData = function () {
     phoneticResult: null,
     showHelp: false,
     activeHelpType: "",
-    copied: false,
-    // Progressive vertical UI state
+    copiedOriginal: false,
+    copiedSegmented: false,
+    copiedPhonetics: false,
     showSegmentation: false,
     showSegmented: false,
     showPhonetic: false,
-    // Textarea synchronization
     textareaHeight: 320, // Default height in pixels
     scrollSyncEnabled: true,
-    // Responsive state
     windowWidth: window.innerWidth,
 
-    // Computed properties for better reactivity
     get isDesktop() {
       return this.windowWidth >= 1024;
     },
@@ -256,7 +254,7 @@ window.alpineData = function () {
       return this.phoneticResult[type] || "";
     },
 
-    async copyToClipboard(text) {
+    async copyToClipboard(text, panel = "phonetics") {
       try {
         // Convert <br/> tags to newlines before stripping HTML
         const textWithNewlines = text.replace(/<br\s*\/?>/gi, "\n");
@@ -267,8 +265,18 @@ window.alpineData = function () {
         const cleanText = tempDiv.textContent || tempDiv.innerText || "";
 
         await navigator.clipboard.writeText(cleanText);
-        this.copied = true;
-        setTimeout(() => (this.copied = false), 2000);
+
+        // Set the correct copied state based on panel
+        if (panel === "original") {
+          this.copiedOriginal = true;
+          setTimeout(() => (this.copiedOriginal = false), 2000);
+        } else if (panel === "segmented") {
+          this.copiedSegmented = true;
+          setTimeout(() => (this.copiedSegmented = false), 2000);
+        } else {
+          this.copiedPhonetics = true;
+          setTimeout(() => (this.copiedPhonetics = false), 2000);
+        }
       } catch (error) {
         console.error("Error copying to clipboard:", error);
       }
@@ -330,7 +338,7 @@ window.alpineData = function () {
         if (source !== "segmented" && this.$refs.segmentedTextarea) {
           targets.push(this.$refs.segmentedTextarea);
         }
-        if (source !== "phonetic" && this.$refs.phoneticOutput) {
+        if (source !== "phonetics" && this.$refs.phoneticOutput) {
           targets.push(this.$refs.phoneticOutput);
         }
 
