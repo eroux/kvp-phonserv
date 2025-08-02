@@ -77,15 +77,38 @@ window.alpineData = function () {
           body: formData,
         });
         const data = await response.json();
-        this.segmentedText = data.segmented.replace(/^ +/gm, "");
+
+        // Count trailing newlines in original text
+        const originalTrailingCount = (
+          this.originalText.match(/(\r?\n)*$/)[0] || ""
+        ).length;
+
+        // Process segmented text and preserve trailing newlines
+        let segmentedText = data.segmented.replace(/^ +/gm, "");
+        let kvpText = data.kvp;
+        let ipaText = data.ipa;
+
+        // Count current trailing newlines and adjust if needed
+        const currentTrailingCount = (segmentedText.match(/(\r?\n)*$/)[0] || "")
+          .length;
+        if (currentTrailingCount < originalTrailingCount) {
+          const missingNewlines = "\n".repeat(
+            originalTrailingCount - currentTrailingCount
+          );
+          segmentedText += missingNewlines;
+          kvpText += missingNewlines;
+          ipaText += missingNewlines;
+        }
+
+        this.segmentedText = segmentedText;
 
         // Transform and store results
         this.phoneticResult = {
-          kvp: kvptodisplay(data.kvp),
-          ipa: ipatodisplay(data.ipa),
-          advanced: ipatophon(data.ipa, "advanced"),
-          intermediate: ipatophon(data.ipa, "intermediate"),
-          simple: ipatophon(data.ipa, "simple"),
+          kvp: kvptodisplay(kvpText),
+          ipa: ipatodisplay(ipaText),
+          advanced: ipatophon(ipaText, "advanced"),
+          intermediate: ipatophon(ipaText, "intermediate"),
+          simple: ipatophon(ipaText, "simple"),
         };
 
         this.step = 2;
