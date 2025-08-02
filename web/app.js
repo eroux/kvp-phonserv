@@ -1,6 +1,7 @@
 window.alpineData = function () {
   // Keys for localStorage
   const STORAGE_KEYS = {
+    collapsed: "kvp_collapsed",
     originalText: "kvp_originalText",
     segmentedText: "kvp_segmentedText",
     segmentationType: "kvp_segmentationType",
@@ -30,9 +31,9 @@ window.alpineData = function () {
   const storedText = load(STORAGE_KEYS.originalText, defaultText);
 
   return {
-    collapsed: load("kvp_collapsed", "false") === "true",
     step: 1,
     originalText: storedText === "" ? defaultText : storedText,
+    collapsed: load(STORAGE_KEYS.collapsed, "false") === "true",
     segmentedText: load(STORAGE_KEYS.segmentedText, ""),
     segmentationType: load(STORAGE_KEYS.segmentationType, "words"),
     phoneticization: load(STORAGE_KEYS.phoneticization, "kvp"),
@@ -57,19 +58,6 @@ window.alpineData = function () {
 
     get isMobile() {
       return this.windowWidth < 1024;
-    },
-
-    // Watchers for collapse state
-    $watch: {
-      collapsed(value) {
-        try {
-          localStorage.setItem("kvp_collapsed", value);
-        } catch (e) {}
-        // Adjust textarea height when collapse state changes
-        this.$nextTick(() => {
-          this.adjustTextareaHeight();
-        });
-      },
     },
 
     async segment() {
@@ -147,6 +135,11 @@ window.alpineData = function () {
       });
 
       // Watch and persist fields to localStorage
+      this.$watch("collapsed", (val) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.collapsed, val);
+        } catch (e) {}
+      });
       this.$watch("originalText", (val) => {
         try {
           localStorage.setItem(STORAGE_KEYS.originalText, val);
