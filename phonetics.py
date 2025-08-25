@@ -62,18 +62,25 @@ def segmentbywords(in_str):
         while i < len(parts):
             part = parts[i]
             if part in _segmentation_exceptions:
+                segmented_exception = _segmentation_exceptions[part]
+                
                 # Always add a space before the exception
-                # Check if next part starts with a particle
                 next_part = parts[i+1] if i+1 < len(parts) else ''
-                # Remove leading whitespace for accurate check
                 next_part_stripped = next_part.lstrip()
                 # Particles: འི, ར, ས
                 if next_part_stripped.startswith(('འི', 'ར', 'ས')):
                     # No space after exception
-                    result.append(f" {_segmentation_exceptions[part]}")
+                    result.append(f" {segmented_exception}")
                 else:
-                    # Space after exception
-                    result.append(f" {_segmentation_exceptions[part]} ")
+                    combined = f"{segmented_exception}{next_part_stripped}"
+                    processed_combined = _postsegment(combined)
+                    # If there would have been a postsegment,
+                    # Then don't add a space after the exception
+                    # Otherwise add one
+                    if processed_combined != combined:
+                        result.append(f" {segmented_exception}")
+                    else:
+                        result.append(f" {segmented_exception} ")
             elif part.strip():
                 result.append(_segmentbywords_botok(part))
             i += 1
